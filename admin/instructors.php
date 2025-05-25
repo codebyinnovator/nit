@@ -1,176 +1,133 @@
 <?php
-include('../connect.php');
-
-// Helper function to get old image path
-function getOldImagePath($conn, $slide_id) {
-    $query = "SELECT image_path FROM slider WHERE id = $slide_id";
-    $result = mysqli_query($conn, $query);
-    if ($result && $row = mysqli_fetch_assoc($result)) {
-        return $row['image_path'];
-    }
-    return '';
-}
-
-// Initialize variables
-$errors = [];
-$success = '';
-$current_slide = null;
+session_start();
+include("../connect.php");
 
 // Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Sanitize and validate input
-    $slide_id = isset($_POST['slide_id']) ? intval($_POST['slide_id']) : 0;
-    $title = isset($_POST['slide_title']) ? mysqli_real_escape_string($conn, trim($_POST['slide_title'])) : '';
-    $description = isset($_POST['slide_description']) ? mysqli_real_escape_string($conn, trim($_POST['slide_description'])) : '';
-    $content_position = isset($_POST['content_position']) ? mysqli_real_escape_string($conn, trim($_POST['content_position'])) : 'center';
-    $text_color = isset($_POST['text_color']) ? mysqli_real_escape_string($conn, trim($_POST['text_color'])) : '#ffffff';
-    $title_color = isset($_POST['title_color']) ? mysqli_real_escape_string($conn, trim($_POST['title_color'])) : '#ffffff';
-
-    // Validate required fields
-    if (empty($title)) {
-        $errors[] = "Slide title is required";
-    }
-
-    // Handle file upload
-    $image_path = '';
-    if (isset($_FILES['slide_image']) && $_FILES['slide_image']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = '../home_images/';
-        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        $file_info = finfo_open(FILEINFO_MIME_TYPE);
-        $mime_type = finfo_file($file_info, $_FILES['slide_image']['tmp_name']);
-
-        if (!in_array($mime_type, $allowed_types)) {
-            $errors[] = "Only JPG, PNG, GIF, and WebP files are allowed";
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['add_instructor'])) {
+        // Add new instructor
+        $name = $_POST['name'];
+        $position = $_POST['position'];
+        $qualification = $_POST['qualification'];
+        $bio = $_POST['bio'];
+        
+        // Handle image upload
+        $image_path = '';
+        if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
+            $upload_dir = '../instructors/';
+            if (!file_exists($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+            $file_name = uniqid() . '_' . basename($_FILES['image']['name']);
+            $target_path = $upload_dir . $file_name;
+            
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $target_path)) {
+                $image_path = 'instructors/' . $file_name;
+            }
+        }
+        
+        $stmt = $conn->prepare("INSERT INTO instructors (name, position, qualification, bio, image_path) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssss", $name, $position, $qualification, $bio, $image_path);
+        if ($stmt->execute()) {
+            $_SESSION['message'] = "Instructor added successfully!";
+            $_SESSION['message_type'] = "success";
         } else {
-            // Generate unique filename
-            $ext = pathinfo($_FILES['slide_image']['name'], PATHINFO_EXTENSION);
-            $filename = 'slide_' . time() . '_' . uniqid() . '.' . $ext;
-            $destination = $upload_dir . $filename;
-
-            if (move_uploaded_file($_FILES['slide_image']['tmp_name'], $destination)) {
-                $image_path = 'home_images/' . $filename;
-
+            $_SESSION['message'] = "Error adding instructor: " . $conn->error;
+            $_SESSION['message_type'] = "danger";
+        }
+        header("Location: instructors.php");
+        exit();
+    }
+    elseif (isset($_POST['update_instructor'])) {
+        // Update existing instructor
+        $id = $_POST['id'];
+        $name = $_POST['name'];
+        $position = $_POST['position'];
+        $qualification = $_POST['qualification'];
+        $bio = $_POST['bio'];
+        
+        // Handle image upload
+        $image_path = $_POST['current_image'];
+        if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
+            $upload_dir = '../instructors/';
+            $file_name = uniqid() . '_' . basename($_FILES['image']['name']);
+            $target_path = $upload_dir . $file_name;
+            
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $target_path)) {
+                $image_path = 'instructors/' . $file_name;
                 // Delete old image if exists
-                if ($slide_id > 0) {
-                    $old_image = getOldImagePath($conn, $slide_id);
-                    if (!empty($old_image) && file_exists('../' . $old_image)) {
-                        unlink('../' . $old_image);
-                    }
+                if (!empty($_POST['current_image']) && file_exists('../' . $_POST['current_image'])) {
+                    unlink('../' . $_POST['current_image']);
                 }
-            } else {
-                $errors[] = "Failed to upload image";
             }
         }
-    }
-
-    // If no errors, proceed with database operation
-    if (empty($errors)) {
-        if ($slide_id > 0) {
-            // Update existing slide
-            if (!empty($image_path)) {
-                $query = "UPDATE slider SET 
-                          title = '$title',
-                          description = '$description',
-                          content_position = '$content_position',
-                          text_color = '$text_color',
-                          title_color = '$title_color',
-                          image_path = '$image_path'
-                          WHERE id = $slide_id";
-            } else {
-                $query = "UPDATE slider SET 
-                          title = '$title',
-                          description = '$description',
-                          content_position = '$content_position',
-                          text_color = '$text_color',
-                          title_color = '$title_color'
-                          WHERE id = $slide_id";
-            }
-            $result = mysqli_query($conn, $query);
-
-            if ($result) {
-                $success = "Slide updated successfully";
-                $current_slide = [
-                    'id' => $slide_id,
-                    'title' => $title,
-                    'description' => $description,
-                    'content_position' => $content_position,
-                    'text_color' => $text_color,
-                    'title_color' => $title_color,
-                    'image_path' => $image_path ?: getOldImagePath($conn, $slide_id)
-                ];
-            } else {
-                $errors[] = "Failed to update slide: " . mysqli_error($conn);
-            }
+        
+        $stmt = $conn->prepare("UPDATE instructors SET name=?, position=?, qualification=?, bio=?, image_path=? WHERE id=?");
+        $stmt->bind_param("sssssi", $name, $position, $qualification, $bio, $image_path, $id);
+        if ($stmt->execute()) {
+            $_SESSION['message'] = "Instructor updated successfully!";
+            $_SESSION['message_type'] = "success";
         } else {
-            // Insert new slide
-            $sort_order_query = "SELECT MAX(sort_order) as max_order FROM slider";
-            $sort_result = mysqli_query($conn, $sort_order_query);
-            $sort_row = mysqli_fetch_assoc($sort_result);
-            $new_sort_order = $sort_row['max_order'] + 1;
-
-            $query = "INSERT INTO slider (title, description, content_position, text_color, title_color, image_path, sort_order, is_active)
-                      VALUES ('$title', '$description', '$content_position', '$text_color', '$title_color', '$image_path', $new_sort_order, 1)";
-            $result = mysqli_query($conn, $query);
-
-            if ($result) {
-                $slide_id = mysqli_insert_id($conn);
-                $success = "Slide added successfully";
-                $current_slide = [
-                    'id' => $slide_id,
-                    'title' => $title,
-                    'description' => $description,
-                    'content_position' => $content_position,
-                    'text_color' => $text_color,
-                    'title_color' => $title_color,
-                    'image_path' => $image_path
-                ];
-            } else {
-                $errors[] = "Failed to add slide: " . mysqli_error($conn);
-            }
+            $_SESSION['message'] = "Error updating instructor: " . $conn->error;
+            $_SESSION['message_type'] = "danger";
         }
+        header("Location: instructors.php");
+        exit();
     }
 }
 
 // Handle delete action
-if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
-    $delete_id = intval($_GET['delete']);
-
-    // Get image path first
-    $query = "SELECT image_path FROM slider WHERE id = $delete_id";
-    $result = mysqli_query($conn, $query);
-    if ($row = mysqli_fetch_assoc($result)) {
-        if (!empty($row['image_path']) && file_exists('../' . $row['image_path'])) {
-            unlink('../' . $row['image_path']);
+if (isset($_GET['delete'])) {
+    $id = intval($_GET['delete']); // Sanitize input
+    
+    try {
+        // Start transaction
+        $conn->begin_transaction();
+        
+        // First get image path to delete file
+        $stmt = $conn->prepare("SELECT image_path FROM instructors WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            if (!empty($row['image_path']) && file_exists('../' . $row['image_path'])) {
+                unlink('../' . $row['image_path']);
+            }
         }
+        
+        // Delete instructor record
+        $stmt = $conn->prepare("DELETE FROM instructors WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        
+        // Commit transaction
+        $conn->commit();
+        
+        $_SESSION['message'] = "Instructor deleted successfully!";
+        $_SESSION['message_type'] = "success";
+    } catch (Exception $e) {
+        // Rollback transaction on error
+        $conn->rollback();
+        $_SESSION['message'] = "Error deleting instructor: " . $e->getMessage();
+        $_SESSION['message_type'] = "danger";
     }
-
-    // Delete from database
-    $query = "DELETE FROM slider WHERE id = $delete_id";
-    $result = mysqli_query($conn, $query);
-
-    if ($result) {
-        $success = "Slide deleted successfully";
-    } else {
-        $errors[] = "Failed to delete slide: " . mysqli_error($conn);
-    }
+    
+    // Redirect to prevent form resubmission
+    header("Location: instructors.php");
+    exit();
 }
 
-// Get all slides for the list
-$slides = [];
-$query = "SELECT * FROM slider ORDER BY sort_order ASC";
-$result = mysqli_query($conn, $query);
-while ($row = mysqli_fetch_assoc($result)) {
-    $slides[] = $row;
-}
+// Fetch all instructors
+$instructors = $conn->query("SELECT * FROM instructors ORDER BY name");
 
-// Get current slide data if editing
-if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
-    $edit_id = intval($_GET['edit']);
-    $query = "SELECT * FROM slider WHERE id = $edit_id";
-    $result = mysqli_query($conn, $query);
-    $current_slide = mysqli_fetch_assoc($result);
-} elseif (!empty($slides)) {
-    $current_slide = $slides[0];
+// Display session message if exists
+if (isset($_SESSION['message'])) {
+    $message = $_SESSION['message'];
+    $message_type = $_SESSION['message_type'];
+    unset($_SESSION['message']);
+    unset($_SESSION['message_type']);
 }
 ?>
 
@@ -183,7 +140,7 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
   <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="../assets/img/favicon.png">
   <title>
-    Material Dashboard 3 by Creative Tim
+    Manage Instructors
   </title>
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,900" />
@@ -194,273 +151,38 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
   <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
   <!-- Material Icons -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <!-- CSS Files -->
-  <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />
-  <style>             
-    .admin-container {
-        max-width: 100%;
-        padding: 20px;
-    }   
-    
-    .slider-management {
-        display: flex;
-        gap: 20px;
-    }
-    
-    .slides-list {
-        width: 300px;
-        background: white;
-        border-radius: 5px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        padding: 15px;
-        max-height: 80vh;
-        overflow-y: auto;
-    }
-    
-    .slide-item {
-        padding: 12px;
-        margin-bottom: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    
-    .slide-item:hover {
-        background-color: #f0f0f0;
-    }
-    
-    .slide-item.active {
-        border-color: #3498db;
-        background-color: #e8f4fc;
-    }
-    
-    .slide-item h3 {
-        margin-bottom: 5px;
-        font-size: 16px;
-    }
-    
-    .slide-item p {
-        color: #666;
-        font-size: 14px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .add-slide-btn {
-        display: block;
-        width: 100%;
-        padding: 10px;
-        background-color: #27ae60;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-top: 10px;
-        text-align: center;
-        font-weight: 600;
-    }
-    
-    .add-slide-btn:hover {
-        background-color: #2ecc71;
-    }
-    
-    .slide-editor {
-        flex: 1;
-        background-color: white;
-        border-radius: 5px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-    }
-    
-    .form-group {
-        margin-bottom: 20px;
-    }
-    
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: #333;
-    }
-    
-    .form-group input[type="text"],
-    .form-group textarea,
-    .form-group input[type="file"],
-    .form-group select,
-    .form-group input[type="color"] {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 16px;
-    }
-    
-    .form-group textarea {
-        min-height: 100px;
-        resize: vertical;
-    }
-    
-    .form-group input[type="file"] {
-        padding: 8px;
-    }
-    
-    .form-group input[type="color"] {
-        height: 50px;
-        padding: 5px;
-    }
-    
-    .form-row {
-        display: flex;
-        gap: 20px;
-    }
-    
-    .form-row .form-group {
-        flex: 1;
-    }
-    
-    .btn {
-        background-color: #3498db;
-        color: white;
-        border: none;
-        padding: 12px 20px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: background-color 0.3s;
-        margin-right: 10px;
-    }
-    
-    .btn:hover {
-        background-color: #2980b9;
-    }
-    
-    .btn-danger {
-        background-color: #e74c3c;
-    }
-    
-    .btn-danger:hover {
-        background-color: #c0392b;
-    }
-    
-    .btn-success {
-        background-color: #27ae60;
-    }
-    
-    .btn-success:hover {
-        background-color: #2ecc71;
-    }
-    
-    .image-preview-container {
-        margin-top: 20px;
-        text-align: center;
-    }
-    
-    .current-image {
-        max-width: 100%;
-        max-height: 200px;
-        margin-bottom: 10px;
-        border: 1px solid #ddd;
-        padding: 5px;
-        background: #f5f5f5;
-    }
-    
-    .image-upload-info {
-        font-size: 14px;
-        color: #666;
-        margin-top: 5px;
-    }
-    
-    .preview-section {
-        margin-top: 30px;
-        background-color: white;
-        padding: 30px;
-        border-radius: 5px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    
-    .preview-slider {
-        position: relative;
-        height: 400px;
-        overflow: hidden;
-        margin-bottom: 20px;
-        border: 1px solid #ddd;
-    }
-    
-    .preview-slide {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-size: cover;
-        background-position: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    }
-    
-    .preview-content {
-        max-width: 800px;
-        padding: 20px;
-    }
-    
-    .preview-content h1 {
-        font-size: 36px;
-        margin-bottom: 20px;
-    }
-    
-    .preview-content p {
-        font-size: 18px;
-        margin-bottom: 30px;
-        line-height: 1.6;
-    }
-    
-    .preview-btn {
-        display: inline-block;
-        background-color: #8bc34a;
-        color: white;
-        padding: 12px 30px;
-        text-decoration: none;
-        border-radius: 4px;
-        font-weight: 600;
-    }
-    
-    .action-buttons {
-        margin-top: 20px;
-        display: flex;
-        justify-content: space-between;
-    }
-    
-    .color-preview {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        border: 1px solid #ddd;
-        margin-left: 10px;
-        vertical-align: middle;
-    }
-    
-    .alert {
-        padding: 15px;
-        margin-bottom: 20px;
-        border: 1px solid transparent;
-        border-radius: 4px;
-    }
-    
-    .alert-success {
-        color: #3c763d;
-        background-color: #dff0d8;
-        border-color: #d6e9c6;
-    }
-    
-    .alert-danger {
-        color: #a94442;
-        background-color: #f2dede;
-        border-color: #ebccd1;
-    }
+  <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />  
+  <style>
+        input, textarea, select {
+            border: 1px solid #ccc !important;
+            padding: 8px !important;
+            border-radius: 4px !important;
+            font-size: 14px !important;
+        }
+        .instructor-img-preview {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+        .instructor-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .bio-preview {
+            max-height: 100px;            
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
   </style>
 </head>
 
@@ -624,123 +346,130 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
       </div>
     </nav>
     <!-- End Navbar -->
-    <div class="container-fluid py-2">
-      <div class="row">
-        <div class="admin-container">                
-            <?php if (!empty($success)): ?>
-                <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
-            <?php endif; ?>
-            
-            <?php if (!empty($errors)): ?>
-                <div class="alert alert-danger">
-                    <?php foreach ($errors as $error): ?>
-                        <p><?php echo htmlspecialchars($error); ?></p>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-            
-            <div class="slider-management">
-                <div class="slides-list">
-                    <h3>Slides</h3>
-                    <?php foreach ($slides as $slide): ?>
-                        <div class="slide-item <?php echo ($current_slide && $current_slide['id'] == $slide['id']) ? 'active' : ''; ?>" 
-                            onclick="window.location.href='?edit=<?php echo $slide['id']; ?>'">
-                            <h3><?php echo htmlspecialchars($slide['title']); ?></h3>
-                            <p><?php echo htmlspecialchars(substr($slide['description'], 0, 50) . (strlen($slide['description']) > 50 ? '...' : '')); ?></p>
-                        </div>
-                    <?php endforeach; ?>                    
-                </div>
-                
-                <div class="slide-editor">
-                    <?php if ($current_slide): ?>
-                    <form id="slide-form" action="" method="POST" enctype="multipart/form-data">
-                        <input type="hidden" name="slide_id" value="<?php echo $current_slide['id']; ?>">
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="slide_title">Slide Title</label>
-                                <input type="text" id="slide_title" name="slide_title" 
-                                    value="<?php echo htmlspecialchars($current_slide['title']); ?>" 
-                                    placeholder="Enter slide title" required>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="slide_description">Slide Description</label>
-                            <textarea id="slide_description" name="slide_description" 
-                                    placeholder="Enter slide description"><?php echo htmlspecialchars($current_slide['description']); ?></textarea>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="content_position">Content Position</label>
-                                <select id="content_position" name="content_position">
-                                    <option value="left" <?php echo ($current_slide['content_position'] == 'left') ? 'selected' : ''; ?>>Left</option>
-                                    <option value="center" <?php echo ($current_slide['content_position'] == 'center') ? 'selected' : ''; ?>>Center</option>
-                                    <option value="right" <?php echo ($current_slide['content_position'] == 'right') ? 'selected' : ''; ?>>Right</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="text_color">Text Color <span class="color-preview" id="text-color-preview" 
-                                    style="background-color: <?php echo htmlspecialchars($current_slide['text_color']); ?>"></span></label>
-                                <input type="color" id="text_color" name="text_color" 
-                                    value="<?php echo htmlspecialchars($current_slide['text_color']); ?>">
-                            </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="title_color">Title Color <span class="color-preview" id="title-color-preview" 
-                                    style="background-color: <?php echo htmlspecialchars($current_slide['title_color']); ?>"></span></label>
-                                <input type="color" id="title_color" name="title_color" 
-                                    value="<?php echo htmlspecialchars($current_slide['title_color']); ?>">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="slide_image">Slide Background Image</label>
-                            <input type="file" id="slide_image" name="slide_image" accept="image/*">
-                            <p class="image-upload-info">Recommended size: 1920x800px (will be cropped to fit)</p>
-                            
-                            <?php if (!empty($current_slide['image_path'])): ?>
-                                <div class="image-preview-container">
-                                    <p>Current Image:</p>
-                                    <img src="../<?php echo htmlspecialchars($current_slide['image_path']); ?>" id="current-image-preview" class="current-image" alt="Current Slide Image">
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <div class="action-buttons">
-                            <div>
-                                <button type="submit" class="btn btn-success">Save Changes</button>
-                                <button type="button" class="btn" onclick="window.location.href='?'">Cancel</button>
-                            </div>
-                            <button type="button" class="btn btn-danger" 
-                                    onclick="if(confirm('Are you sure you want to delete this slide?')) { window.location.href='?delete=<?php echo $current_slide['id']; ?>'; }">
-                                Delete Slide
-                            </button>
-                        </div>
-                    </form>
+    <div class="container py-4">
+        <h1 class="mb-4">Manage Instructors</h1>
+        
+        <?php if (isset($message)): ?>
+            <div class="alert alert-<?php echo $message_type; ?>"><?php echo $message; ?></div>
+        <?php endif; ?>
+        
+        <!-- Instructor Form -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2><?php echo isset($_GET['edit']) ? 'Edit Instructor' : 'Add Instructor'; ?></h2>
+            </div>
+            <div class="card-body">
+                <?php
+                $edit_instructor = null;
+                if (isset($_GET['edit'])) {
+                    $edit_id = intval($_GET['edit']);
+                    $edit_instructor = $conn->query("SELECT * FROM instructors WHERE id = $edit_id")->fetch_assoc();
+                }
+                ?>
+                <form method="POST" enctype="multipart/form-data">
+                    <?php if ($edit_instructor): ?>
+                        <input type="hidden" name="id" value="<?php echo $edit_instructor['id']; ?>">
+                        <input type="hidden" name="current_image" value="<?php echo $edit_instructor['image_path']; ?>">
+                    <?php endif; ?>
                     
-                    <div class="preview-section">
-                        <h2>Slide Preview</h2>
-                        <div class="preview-slider">
-                            <div class="preview-slide" id="preview-slide" 
-                                style="background-image: url('../<?php echo htmlspecialchars($current_slide['image_path']); ?>');">
-                                <div class="preview-content" id="preview-content" style="text-align: <?php echo htmlspecialchars($current_slide['content_position']); ?>">
-                                    <h1 id="preview-title" style="color: <?php echo htmlspecialchars($current_slide['title_color']); ?>">
-                                        <?php echo htmlspecialchars($current_slide['title']); ?>
-                                    </h1>
-                                    <p id="preview-description" style="color: <?php echo htmlspecialchars($current_slide['text_color']); ?>">
-                                        <?php echo htmlspecialchars($current_slide['description']); ?>
-                                    </p>
-                                </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Name*</label>
+                                <input type="text" class="form-control" name="name" required 
+                                       value="<?php echo $edit_instructor['name'] ?? ''; ?>">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Position*</label>
+                                <input type="text" class="form-control" name="position" required 
+                                       value="<?php echo $edit_instructor['position'] ?? ''; ?>">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Qualification</label>
+                                <input type="text" class="form-control" name="qualification" 
+                                       value="<?php echo $edit_instructor['qualification'] ?? ''; ?>">
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Profile Image</label>
+                                <input type="file" class="form-control" name="image">
+                                <?php if ($edit_instructor && !empty($edit_instructor['image_path'])): ?>
+                                    <div class="mt-2">
+                                        <img src="../<?php echo $edit_instructor['image_path']; ?>" class="instructor-img-preview">
+                                        <p>Current image</p>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label class="form-label">Bio</label>
+                                <textarea class="form-control" name="bio" rows="4"><?php echo $edit_instructor['bio'] ?? ''; ?></textarea>
                             </div>
                         </div>
                     </div>
+                    
+                    <button type="submit" class="btn btn-primary" name="<?php echo isset($_GET['edit']) ? 'update_instructor' : 'add_instructor'; ?>">
+                        <?php echo isset($_GET['edit']) ? 'Update Instructor' : 'Add Instructor'; ?>
+                    </button>
+                    
+                    <?php if (isset($_GET['edit'])): ?>
+                        <a href="instructors.php" class="btn btn-secondary">Cancel</a>
+                    <?php endif; ?>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Instructors List -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Instructors List</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <?php if ($instructors->num_rows > 0): ?>
+                        <?php while ($instructor = $instructors->fetch_assoc()): ?>
+                            <div class="col-md-4 mb-4">
+                                <div class="instructor-card">
+                                    <?php if (!empty($instructor['image_path'])): ?>
+                                        <img src="../<?php echo $instructor['image_path']; ?>" class="instructor-img-preview mx-auto d-block">
+                                    <?php else: ?>
+                                        <div class="instructor-img-preview mx-auto d-block bg-light d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-user fa-3x text-muted"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <h4 class="text-center"><?php echo $instructor['name']; ?></h4>
+                                    <p class="text-center text-muted"><?php echo $instructor['position']; ?></p>
+                                    <?php if ($instructor['qualification']): ?>
+                                        <p class="text-center"><small><?php echo $instructor['qualification']; ?></small></p>
+                                    <?php endif; ?>
+                                    
+                                    <?php if ($instructor['bio']): ?>
+                                        <div class="bio-preview mt-2">
+                                            <p><?php echo $instructor['bio']; ?></p>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <div class="text-center mt-3">
+                                        <a href="instructors.php?edit=<?php echo $instructor['id']; ?>" class="btn btn-sm btn-primary">Edit</a>
+                                        <a href="instructors.php?delete=<?php echo $instructor['id']; ?>" class="btn btn-sm btn-danger" 
+                                           onclick="return confirm('Are you sure you want to delete <?php echo addslashes($instructor['name']); ?>?')">
+                                           Delete
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endwhile; ?>
                     <?php else: ?>
-
+                        <div class="col-12">
+                            <p class="text-center text-muted">No instructors found. Add your first instructor above.</p>
+                        </div>
                     <?php endif; ?>
                 </div>
             </div>
@@ -1106,70 +835,10 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="../assets/js/material-dashboard.min.js?v=3.2.0"></script>
-
-  <script>
-      // Live preview functionality
-      document.getElementById('slide_title')?.addEventListener('input', function() {
-          document.getElementById('preview-title').textContent = this.value;
-      });
-      
-      document.getElementById('slide_description')?.addEventListener('input', function() {
-          document.getElementById('preview-description').textContent = this.value;
-      });
-      
-      document.getElementById('button_text')?.addEventListener('input', function() {
-          document.getElementById('preview-btn-text').textContent = this.value;
-      });
-      
-      // Color pickers functionality
-      document.getElementById('text_color')?.addEventListener('input', function() {
-          document.getElementById('preview-description').style.color = this.value;
-          document.getElementById('text-color-preview').style.backgroundColor = this.value;
-      });
-      
-      document.getElementById('title_color')?.addEventListener('input', function() {
-          document.getElementById('preview-title').style.color = this.value;
-          document.getElementById('title-color-preview').style.backgroundColor = this.value;
-      });
-      
-      document.getElementById('button_color')?.addEventListener('input', function() {
-          document.getElementById('preview-button').style.color = this.value;
-          document.getElementById('button-color-preview').style.backgroundColor = this.value;
-      });
-      
-      // Image preview functionality
-      document.getElementById('slide_image')?.addEventListener('change', function(e) {
-          if (e.target.files && e.target.files[0]) {
-              const reader = new FileReader();
-              
-              reader.onload = function(event) {
-                  document.getElementById('preview-slide').style.backgroundImage = `url('${event.target.result}')`;
-                  if (document.getElementById('current-image-preview')) {
-                      document.getElementById('current-image-preview').src = event.target.result;
-                  }
-              }
-              
-              reader.readAsDataURL(e.target.files[0]);
-          }
-      });
-      
-      // Content position change
-      document.getElementById('content_position')?.addEventListener('change', function() {
-          const previewContent = document.getElementById('preview-content');
-          previewContent.style.textAlign = this.value;
-          
-          if (this.value === 'left') {
-              previewContent.style.marginRight = 'auto';
-              previewContent.style.marginLeft = '0';
-          } else if (this.value === 'right') {
-              previewContent.style.marginLeft = 'auto';
-              previewContent.style.marginRight = '0';
-          } else {
-              previewContent.style.marginLeft = 'auto';
-              previewContent.style.marginRight = 'auto';
-          }
-      });
-  </script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 
 </body>
 </html>

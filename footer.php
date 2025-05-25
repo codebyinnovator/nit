@@ -32,7 +32,7 @@
                         <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                             <div class="single-footer-widget">
                                 <div class="footer-logo">
-                                    <a href="https://demo.hasthemes.com/jones-preview/jones/index.html"><img src="./Jones - Education HTML Template_files/footer-logo.png" alt="Jones"></a>
+                                    <a href="index.php"><img src="./Jones - Education HTML Template_files/footer-logo.png" alt="Jones"></a>
                                 </div>
                             </div>
                         </div>
@@ -57,9 +57,9 @@
                             <div class="single-footer-widget">
                                 <h4>links</h4>
                                 <ul class="footer-widget-list">
-                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/about.html">About us</a></li>
+                                    <li><a href="about.php">About us</a></li>
                                     <li><a href="https://demo.hasthemes.com/jones-preview/jones/signup.html">register</a></li>
-                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html">Courses</a></li>
+                                    <li><a href="course.php">Courses</a></li>
                                     <li><a href="https://demo.hasthemes.com/jones-preview/jones/event.html">Event</a></li>
                                     <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html">Blog</a></li>
                                     <li><a href="https://demo.hasthemes.com/jones-preview/jones/index.html#">FAQ</a></li>

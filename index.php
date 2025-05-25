@@ -5,6 +5,13 @@ include('header.php');
 $query = "SELECT * FROM slider WHERE is_active = 1 ORDER BY sort_order ASC";
 $result = mysqli_query($conn, $query);
 $slides = mysqli_fetch_all($result, MYSQLI_ASSOC);
+$courses = $conn->query("
+    SELECT c.*, i.name as instructor_name, i.position as instructor_position, i.image_path as instructor_image 
+    FROM courses c
+    JOIN instructors i ON c.instructor_id = i.id
+    ORDER BY c.created_at DESC 
+    LIMIT 3
+");
 ?>
 
 <!DOCTYPE html>
@@ -413,120 +420,60 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                     <div class="col-lg-7 col-md-8 col-sm-10">
                         <div class="section-wrapper">
                             <div class="section-title">
-                                <h3>Our Courses</h3>
-                                <p>Proin accumsan est ac iaculis ullamcorper. Integer euismod hendrerit urna Quisque a varius augue, sed elementum lacus. Integer convallis quis</p>
+                                <h3 class="display-5 mb-3">Discover Our Featured Courses</h3>
+                                <p class="lead" style="font-size: 1.1em;font-weight: 600;">Unlock your potential with our expertly crafted curriculum. Whether you're starting a new career or advancing your skills, we have the perfect learning path for you.</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="ht-single-course hover">
-                            <div class="ht-course-top">
-                                <div class="course-top-left">
-                                    <img src="./Jones - Education HTML Template_files/1.jpg" alt="">
-                                    <div class="course-teacher-name">
-                                        <h5>Alex bin do</h5>
-                                        <span>Business</span>
+                    <?php if ($courses->num_rows > 0): ?>
+                        <?php while ($course = $courses->fetch_assoc()): ?>
+                        <div class="col-md-4 col-sm-6 col-xs-12 mb-4">
+                            <div class="ht-single-course hover">
+                                <div class="ht-course-top">
+                                    <div class="course-top-left">
+                                        <img style="width:50px;height:50px;object-fit:cover;" src="<?php echo $course['instructor_image']; ?>" alt="<?php echo htmlspecialchars($course['instructor_name']); ?>">
+                                        <div class="course-teacher-name">
+                                            <h5><?php echo htmlspecialchars($course['instructor_name']); ?></h5>
+                                            <span><?php echo htmlspecialchars($course['instructor_position']); ?></span>
+                                        </div>
                                     </div>
+                                    <span class="course-fee">
+                                        <?php echo ($course['price'] == 0) ? 'Free' : number_format($course['price']).'Ks'; ?>
+                                    </span>
                                 </div>
-                                <span class="course-fee">Free</span>
-                            </div>
-                            <div class="ht-course-image">
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course.html" class="hover-effect">
-                                    <img src="./Jones - Education HTML Template_files/1(1).jpg" alt="">
-                                </a>
-                            </div>
-                            <div class="ht-course-text">
-                                <div class="ht-course-meta">
-                                    <span><i class="fa fa-user"></i>8086</span>
-                                    <span><i class="fa fa-comments"></i>90</span>
-                                    <div class="ht-rating">
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
+                                <div class="ht-course-image">
+                                    <a href="course-details.php?id=<?php echo $course['id']; ?>" class="hover-effect">
+                                        <img style="width:100%;height:180px;object-fit:cover;" src="<?php echo $course['course_image']; ?>" alt="<?php echo htmlspecialchars($course['title']); ?>">
+                                    </a>
+                                </div>
+                                <div class="ht-course-text">
+                                    <div class="ht-course-meta">
+                                        <span><i class="fa fa-clock"></i>
+                                            <?php echo ($course['duration_months'] == 0) ? 'Lifetime' : $course['duration_months'].' months'; ?>
+                                        </span>
+                                        <span><i class="fa fa-video-camera"></i>
+                                            <?php echo $course['lecture_count'].' lectures'; ?>
+                                        </span>
                                     </div>
+                                    <h4>
+                                        <a href="course-details.php?id=<?php echo $course['id']; ?>">
+                                            <?php echo htmlspecialchars($course['title']); ?>
+                                        </a>
+                                    </h4>
+                                    <a href="course-details.php?id=<?php echo $course['id']; ?>">
+                                        Read More <i class="fa fa-long-arrow-right"></i>
+                                    </a>
                                 </div>
-                                <h4>
-                                    <a href="https://demo.hasthemes.com/jones-preview/jones/course.html">Lorem ipsum dolor sit amet, cosec eteture adipiscing.</a>
-                                </h4>
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course.html">Read More <i class="fa fa-long-arrow-right"></i></a>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="ht-single-course hover">
-                            <div class="ht-course-top">
-                                <div class="course-top-left">
-                                    <img src="./Jones - Education HTML Template_files/2.jpg" alt="">
-                                    <div class="course-teacher-name">
-                                        <h5>sathy Bhuiyan</h5>
-                                        <span>Arts</span>
-                                    </div>
-                                </div>
-                                <span class="course-fee">$55.00</span>
-                            </div>
-                            <div class="ht-course-image">
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course.html" class="hover-effect">
-                                    <img src="./Jones - Education HTML Template_files/2(1).jpg" alt="">
-                                </a>
-                            </div>
-                            <div class="ht-course-text">
-                                <div class="ht-course-meta">
-                                    <span><i class="fa fa-user"></i>8086</span>
-                                    <span><i class="fa fa-comments"></i>90</span>
-                                    <div class="ht-rating">
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                    </div>
-                                </div>
-                                <h4>
-                                    <a href="https://demo.hasthemes.com/jones-preview/jones/course.html">Lorem ipsum dolor sit amet, cosec eteture adipiscing.</a>
-                                </h4>
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course.html">Read More <i class="fa fa-long-arrow-right"></i></a>
-                            </div>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <div class="col-12 text-center py-5">
+                            <h4>No courses found</h4>
                         </div>
-                    </div>
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="ht-single-course hover">
-                            <div class="ht-course-top">
-                                <div class="course-top-left">
-                                    <img src="./Jones - Education HTML Template_files/3.jpg" alt="">
-                                    <div class="course-teacher-name">
-                                        <h5>sathy noor</h5>
-                                        <span>Mathmetics</span>
-                                    </div>
-                                </div>
-                                <span class="course-fee"><span class="prev-free">$70.00</span>$35.00</span>
-                            </div>
-                            <div class="ht-course-image">
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course.html" class="hover-effect">
-                                    <img src="./Jones - Education HTML Template_files/3(1).jpg" alt="">
-                                    <span class="discount">50%<span>OFF</span></span>
-                                </a>
-                            </div>
-                            <div class="ht-course-text">
-                                <div class="ht-course-meta">
-                                    <span><i class="fa fa-user"></i>8086</span>
-                                    <span><i class="fa fa-comments"></i>90</span>
-                                    <div class="ht-rating">
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                    </div>
-                                </div>
-                                <h4>
-                                    <a href="https://demo.hasthemes.com/jones-preview/jones/course.html">Lorem ipsum dolor sit amet, cosec eteture adipiscing.</a>
-                                </h4>
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course.html">Read More <i class="fa fa-long-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </section>

@@ -38,14 +38,14 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                         </div>
                         <div class="col-md-4 col-sm-6 col-xs-12">
                             <div class="header-top-right">
-                                <div class="btn-group" role="group">
+                                <!-- <div class="btn-group" role="group">
                                     <button type="button" class="dropdown-toggle language" data-toggle="dropdown">Language<i class="fa fa-caret-down"></i></button>
                                     <ul class="dropdown-menu">
                                         <li><a href="https://demo.hasthemes.com/jones-preview/jones/index.html#">English</a></li>
                                         <li><a href="https://demo.hasthemes.com/jones-preview/jones/index.html#">Bangla</a></li>
                                         <li><a href="https://demo.hasthemes.com/jones-preview/jones/index.html#">French</a></li>
                                     </ul>
-                                </div>
+                                </div> -->
                                 <a href="https://demo.hasthemes.com/jones-preview/jones/signup.html"><i class="fa fa-user"></i>sign up</a>
                                 <a href="https://demo.hasthemes.com/jones-preview/jones/index.html#" class="modal-view button" data-toggle="modal" data-target="#login_box"><i class="fa fa-lock"></i>login</a>
                             </div>
@@ -58,7 +58,7 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                     <div class="row">
                         <div class="col-lg-3 col-md-2 col-sm-7 col-xs-7">
                             <div class="logo">
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/index.html"><img src="./Jones - Education HTML Template_files/logo.png" alt="Jones"></a>
+                                <a href="index.php"><img src="./Jones - Education HTML Template_files/logo.png" alt="Jones"></a>
                             </div>
                         </div>
                         <div class="col-lg-9 col-md-10 col-sm-5 col-xs-5">
@@ -67,17 +67,17 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                                     <div class="main-menu mean-menu">
                                         <nav style="display: block;">
                                             <ul>              
-                                                <li class="active"><a href="https://demo.hasthemes.com/jones-preview/jones/index.html">Home</a>
-                                                    <ul>
+                                                <li class="active"><a href="index.php">Home</a>
+                                                    <!-- <ul>
                                                         <li><a href="https://demo.hasthemes.com/jones-preview/jones/index.html">Homepage One</a></li>
                                                         <li><a href="https://demo.hasthemes.com/jones-preview/jones/index-2.html">Homepage Two</a></li>
                                                         <li><a href="https://demo.hasthemes.com/jones-preview/jones/index-3.html">Homepage Three</a></li>
-                                                    </ul>
+                                                    </ul> -->
                                                 </li>
-                                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/about.html">About</a></li>
-                                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html">Courses</a>
+                                                <li><a href="about.php">About</a></li>
+                                                <li><a href="course.php">Courses</a>
                                                     <ul>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Course Details</a></li>
+                                                        <li><a href="#">Course Details</a></li>
                                                     </ul>
                                                 </li>
                                                 <li><a href="https://demo.hasthemes.com/jones-preview/jones/event.html">Event</a>
