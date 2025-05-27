@@ -32,7 +32,7 @@
                         <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                             <div class="single-footer-widget">
                                 <div class="footer-logo">
-                                    <a href="index.php"><img src="./Jones - Education HTML Template_files/footer-logo.png" alt="Jones"></a>
+                                    <a href="index.php"><img src="./img/logo1.png" alt="Jones"></a>
                                 </div>
                             </div>
                         </div>
