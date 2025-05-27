@@ -178,9 +178,22 @@
                             <i class="fa fa-facebook"></i>
                             <span>Facebook</span>
                         </a>
-                        <a href="https://plus.google.com/117030536115448126648" class="google">
+
+                        <?php
+                        require_once 'vendor/autoload.php';
+
+                        $client = new Google_Client();
+                        $client->setClientId('45409457152-qccl165icvqlgo5srpfcml1ausbg6123.apps.googleusercontent.com');
+                        $client->setClientSecret('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');
+                        $client->setRedirectUri('http://localhost/nit/admin/actions/google_auth.php');
+                        $client->addScope("email");
+                        $client->addScope("profile");
+
+                        $loginUrl = $client->createAuthUrl();
+                        ?>
+                        <a href="<?= htmlspecialchars($loginUrl) ?>" class="google">
                             <i class="fa fa-google-plus"></i>
-                            <span>Google</span>
+                            <span>Signin with Google</span>
                         </a>
                         <a href="https://twitter.com/devitemsllc/" class="twitter">
                             <i class="fa fa-twitter"></i>
@@ -332,13 +345,22 @@
                 <div class="modal-body">
                     <div class="signup-links-container sign-up-box">
                         <h3 class="sub-title">Login with social Network</h3>
-                        <a href="https://www.facebook.com/devitems/" class="facebook">
-                            <i class="fa fa-facebook"></i>
-                            <span>Facebook</span>
-                        </a>
-                        <a href="https://plus.google.com/117030536115448126648" class="google">
+                        <?php
+                        require_once 'vendor/autoload.php';
+
+                        $client = new Google_Client();
+                        $client->setClientId('45409457152-qccl165icvqlgo5srpfcml1ausbg6123.apps.googleusercontent.com');
+                        $client->setClientSecret('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');
+                        $client->setRedirectUri('http://localhost/nit/admin/actions/google_auth.php');
+                        $client->addScope("email");
+                        $client->addScope("profile");
+
+                        $loginUrl = $client->createAuthUrl();
+                        ?>
+
+                        <a href="<?= htmlspecialchars($loginUrl) ?>" class="google">
                             <i class="fa fa-google-plus"></i>
-                            <span>Google</span>
+                            <span>Login with Google</span>
                         </a>
                         <a href="https://twitter.com/devitemsllc/" class="twitter">
                             <i class="fa fa-twitter"></i>
