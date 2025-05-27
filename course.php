@@ -1,3 +1,34 @@
+<?php
+include("connect.php");
+include("header.php");
+
+// Pagination settings
+$courses_per_page = 6;
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($current_page < 1) $current_page = 1;
+
+// Calculate total courses and pages
+$total_courses = $conn->query("SELECT COUNT(*) FROM courses")->fetch_row()[0];
+$total_pages = ceil($total_courses / $courses_per_page);
+
+// Adjust current page if out of bounds
+if ($current_page > $total_pages && $total_pages > 0) {
+    $current_page = $total_pages;
+}
+
+// Calculate offset
+$offset = ($current_page - 1) * $courses_per_page;
+
+// Fetch courses for current page
+$courses = $conn->query("
+    SELECT c.*, i.name as instructor_name, i.position as instructor_position, i.image_path as instructor_image 
+    FROM courses c
+    JOIN instructors i ON c.instructor_id = i.id
+    ORDER BY c.created_at DESC 
+    LIMIT $offset, $courses_per_page
+");
+?>
+
 <!DOCTYPE html>
 <!-- saved from url=(0058)https://demo.hasthemes.com/jones-preview/jones/course.html -->
 <html class=" js flexbox canvas canvastext webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers no-applicationcache svg inlinesvg smil svgclippaths" lang="en" style=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>body {transition: opacity ease-in 0.2s; } 
@@ -21,108 +52,13 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
         <link rel="stylesheet" href="./course_files/style.css">
         <link rel="stylesheet" href="./course_files/responsive.css">
         <script src="./course_files/modernizr-2.8.3.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     </head>
     <body>
         <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-        
-		<!-- Header Area Start -->
-		<header class="header-area">
-            <div class="header-top bg-dark-blue">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-8 col-sm-6 col-xs-12">
-                            <span class="ht-c-number">Have any question ?</span>
-                            <span class="ht-c-number">0123456789</span>
-                        </div>
-                        <div class="col-md-4 col-sm-6 col-xs-12">
-                            <div class="header-top-right">
-                                <div class="btn-group" role="group">
-                                    <button type="button" class="dropdown-toggle language" data-toggle="dropdown">Language<i class="fa fa-caret-down"></i></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html#">English</a></li>
-                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html#">Bangla</a></li>
-                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html#">French</a></li>
-                                    </ul>
-                                </div>
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/signup.html"><i class="fa fa-user"></i>sign up</a>
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course.html#" class="modal-view button" data-toggle="modal" data-target="#login_box"><i class="fa fa-lock"></i>login</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="mainmenu-area header-sticky">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-3 col-md-2 col-sm-7 col-xs-7">
-                            <div class="logo">
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/index.html"><img src="./course_files/logo.png" alt="Jones"></a>
-                            </div>
-                        </div>
-                        <div class="col-lg-9 col-md-10 col-sm-5 col-xs-5">
-                            <div class="menu-container">
-                                <div class="menu-wrapper">
-                                    <div class="main-menu mean-menu">
-                                        <nav style="display: block;">
-                                            <ul>              
-                                                <li class="active"><a href="https://demo.hasthemes.com/jones-preview/jones/index.html">Home</a>
-                                                    <ul>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/index.html">Homepage One</a></li>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/index-2.html">Homepage Two</a></li>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/index-3.html">Homepage Three</a></li>
-                                                    </ul>
-                                                </li>
-                                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/about.html">About</a></li>
-                                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html">Courses</a>
-                                                    <ul>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Course Details</a></li>
-                                                    </ul>
-                                                </li>
-                                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/event.html">Event</a>
-                                                    <ul>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/event-details.html">Event Details</a></li>
-                                                    </ul>
-                                                </li>
-                                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html">Blog</a>
-                                                    <ul>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog-left-sidebar.html">Blog Left Sidebar</a>
-                                                        </li><li><a href="https://demo.hasthemes.com/jones-preview/jones/blog-details.html">Blog Details</a>
-                                                    </li></ul>
-                                                </li>
-                                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html">Pages</a>
-                                                    <ul>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/about.html">About Page</a></li>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html">Courses Page</a></li>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Course Details</a></li>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/event.html">Event Page</a></li>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/event-details.html">Event Details</a></li>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html">Blog Page</a>
-                                                        </li><li><a href="https://demo.hasthemes.com/jones-preview/jones/blog-details.html">Blog Details</a>
-                                                        </li><li><a href="https://demo.hasthemes.com/jones-preview/jones/blog-left-sidebar.html">Blog Left Sidebar</a>
-                                                        </li><li><a href="https://demo.hasthemes.com/jones-preview/jones/membership.html">Membership</a>
-                                                        </li><li><a href="https://demo.hasthemes.com/jones-preview/jones/signup.html">Signup Page</a>
-                                                        </li><li><a href="https://demo.hasthemes.com/jones-preview/jones/contact.html">Contact Page</a>
-                                                    </li></ul>
-                                                </li>
-                                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/contact.html">Contact</a></li>
-                                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html#">Buy Now</a>
-                                            </li></ul>
-                                        </nav>
-                                    </div>
-                                </div>
-                                <div class="search-content">
-                                    <a class="modal-view button" href="https://demo.hasthemes.com/jones-preview/jones/course.html#" data-toggle="modal" data-target="#search_box"><i class="fa fa-search"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mobile-menu hidden-lg hidden-md"></div>
-                </div>
-            </div>
-		</header>
-		<!-- Header Area End -->
+        		
         <!-- Banner Title Area Start -->
         <div class="banner-title-area bg-dark-blue ptb-180">
             <div class="container text-center">
@@ -134,7 +70,7 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
         <div class="breadcrumb-area">
             <div class="container">
                 <ul class="breadcrumb style-two">
-                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/index.html">Home</a></li>
+                    <li><a href="index.php">Home</a></li>
                     <li>Our Courses</li>
                 </ul>
             </div>
@@ -144,258 +80,105 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
         <section class="course-area pb-150 course-section">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="ht-single-course hover">
-                            <div class="ht-course-top">
-                                <div class="course-top-left">
-                                    <img src="./course_files/1.jpg" alt="">
-                                    <div class="course-teacher-name">
-                                        <h5>Alex bin do</h5>
-                                        <span>Business</span>
+                    <?php if ($courses->num_rows > 0): ?>
+                        <?php while ($course = $courses->fetch_assoc()): ?>
+                        <div class="col-md-4 col-sm-6 col-xs-12 mb-4">
+                            <div class="ht-single-course hover">
+                                <div class="ht-course-top">
+                                    <div class="course-top-left">
+                                        <img style="width:50px;height:50px;object-fit:cover;" src="<?php echo $course['instructor_image']; ?>" alt="<?php echo htmlspecialchars($course['instructor_name']); ?>">
+                                        <div class="course-teacher-name">
+                                            <h5><?php echo htmlspecialchars($course['instructor_name']); ?></h5>
+                                            <span><?php echo htmlspecialchars($course['instructor_position']); ?></span>
+                                        </div>
                                     </div>
+                                    <span class="course-fee">
+                                        <?php echo ($course['price'] == 0) ? 'Free' : number_format($course['price']).'Ks'; ?>
+                                    </span>
                                 </div>
-                                <span class="course-fee">Free</span>
-                            </div>
-                            <div class="ht-course-image">
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html" class="hover-effect">
-                                    <img src="./course_files/1(1).jpg" alt="">
-                                </a>
-                            </div>
-                            <div class="ht-course-text">
-                                <div class="ht-course-meta">
-                                    <span><i class="fa fa-user"></i>8086</span>
-                                    <span><i class="fa fa-comments"></i>90</span>
-                                    <div class="ht-rating">
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
+                                <div class="ht-course-image">
+                                    <a href="course-details.php?id=<?php echo $course['id']; ?>" class="hover-effect">
+                                        <img style="width:100%;height:180px;object-fit:cover;" src="<?php echo $course['course_image']; ?>" alt="<?php echo htmlspecialchars($course['title']); ?>">
+                                    </a>
+                                </div>
+                                <div class="ht-course-text">
+                                    <div class="ht-course-meta">
+                                        <span><i class="fa fa-clock"></i>
+                                            <?php echo ($course['duration_months'] == 0) ? 'Lifetime' : $course['duration_months'].' months'; ?>
+                                        </span>
+                                        <span><i class="fa fa-video-camera"></i>
+                                            <?php echo $course['lecture_count'].' lectures'; ?>
+                                        </span>
                                     </div>
+                                    <h4>
+                                        <a href="course-details.php?id=<?php echo $course['id']; ?>">
+                                            <?php echo htmlspecialchars($course['title']); ?>
+                                        </a>
+                                    </h4>
+                                    <a href="course-details.php?id=<?php echo $course['id']; ?>">
+                                        Read More <i class="fa fa-long-arrow-right"></i>
+                                    </a>
                                 </div>
-                                <h4>
-                                    <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Lorem ipsum dolor sit amet, cosec eteture adipiscing.</a>
-                                </h4>
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Read More <i class="fa fa-long-arrow-right"></i></a>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="ht-single-course hover">
-                            <div class="ht-course-top">
-                                <div class="course-top-left">
-                                    <img src="./course_files/2.jpg" alt="">
-                                    <div class="course-teacher-name">
-                                        <h5>sathy Bhuiyan</h5>
-                                        <span>Arts</span>
-                                    </div>
-                                </div>
-                                <span class="course-fee">$55.00</span>
-                            </div>
-                            <div class="ht-course-image">
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html" class="hover-effect">
-                                    <img src="./course_files/2(1).jpg" alt="">
-                                </a>
-                            </div>
-                            <div class="ht-course-text">
-                                <div class="ht-course-meta">
-                                    <span><i class="fa fa-user"></i>8086</span>
-                                    <span><i class="fa fa-comments"></i>90</span>
-                                    <div class="ht-rating">
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                    </div>
-                                </div>
-                                <h4>
-                                    <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Lorem ipsum dolor sit amet, cosec eteture adipiscing.</a>
-                                </h4>
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Read More <i class="fa fa-long-arrow-right"></i></a>
-                            </div>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <div class="col-12 text-center py-5">
+                            <h4>No courses found</h4>
                         </div>
-                    </div>
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="ht-single-course hover">
-                            <div class="ht-course-top">
-                                <div class="course-top-left">
-                                    <img src="./course_files/3.jpg" alt="">
-                                    <div class="course-teacher-name">
-                                        <h5>sathy noor</h5>
-                                        <span>Mathmetics</span>
-                                    </div>
-                                </div>
-                                <span class="course-fee"><span class="prev-free">$70.00</span>$35.00</span>
-                            </div>
-                            <div class="ht-course-image">
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html" class="hover-effect">
-                                    <img src="./course_files/3(1).jpg" alt="">
-                                    <span class="discount">50%<span>OFF</span></span>
-                                </a>
-                            </div>
-                            <div class="ht-course-text">
-                                <div class="ht-course-meta">
-                                    <span><i class="fa fa-user"></i>8086</span>
-                                    <span><i class="fa fa-comments"></i>90</span>
-                                    <div class="ht-rating">
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                    </div>
-                                </div>
-                                <h4>
-                                    <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Lorem ipsum dolor sit amet, cosec eteture adipiscing.</a>
-                                </h4>
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Read More <i class="fa fa-long-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="ht-single-course hover">
-                            <div class="ht-course-top">
-                                <div class="course-top-left">
-                                    <img src="./course_files/4.jpg" alt="">
-                                    <div class="course-teacher-name">
-                                        <h5>john bin do</h5>
-                                        <span>Management</span>
-                                    </div>
-                                </div>
-                                <span class="course-fee">$80.00</span>
-                            </div>
-                            <div class="ht-course-image">
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html" class="hover-effect">
-                                    <img src="./course_files/4(1).jpg" alt="">
-                                </a>
-                            </div>
-                            <div class="ht-course-text">
-                                <div class="ht-course-meta">
-                                    <span><i class="fa fa-user"></i>8086</span>
-                                    <span><i class="fa fa-comments"></i>90</span>
-                                    <div class="ht-rating">
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                    </div>
-                                </div>
-                                <h4>
-                                    <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Lorem ipsum dolor sit amet, cosec eteture adipiscing.</a>
-                                </h4>
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Read More <i class="fa fa-long-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="ht-single-course hover">
-                            <div class="ht-course-top">
-                                <div class="course-top-left">
-                                    <img src="./course_files/5.jpg" alt="">
-                                    <div class="course-teacher-name">
-                                        <h5>Fahmida noor</h5>
-                                        <span>Science</span>
-                                    </div>
-                                </div>
-                                <span class="course-fee">Free</span>
-                            </div>
-                            <div class="ht-course-image">
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html" class="hover-effect">
-                                    <img src="./course_files/5(1).jpg" alt="">
-                                </a>
-                            </div>
-                            <div class="ht-course-text">
-                                <div class="ht-course-meta">
-                                    <span><i class="fa fa-user"></i>8086</span>
-                                    <span><i class="fa fa-comments"></i>90</span>
-                                    <div class="ht-rating">
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                    </div>
-                                </div>
-                                <h4>
-                                    <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Lorem ipsum dolor sit amet, cosec eteture adipiscing.</a>
-                                </h4>
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Read More <i class="fa fa-long-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-sm-6 col-xs-12">
-                        <div class="ht-single-course hover">
-                            <div class="ht-course-top">
-                                <div class="course-top-left">
-                                    <img src="./course_files/6.jpg" alt="">
-                                    <div class="course-teacher-name">
-                                        <h5>Alex bin do</h5>
-                                        <span>Finance</span>
-                                    </div>
-                                </div>
-                                <span class="course-fee">$99.00</span>
-                            </div>
-                            <div class="ht-course-image">
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html" class="hover-effect">
-                                    <img src="./course_files/6(1).jpg" alt="">
-                                </a>
-                            </div>
-                            <div class="ht-course-text">
-                                <div class="ht-course-meta">
-                                    <span><i class="fa fa-user"></i>8086</span>
-                                    <span><i class="fa fa-comments"></i>90</span>
-                                    <div class="ht-rating">
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                    </div>
-                                </div>
-                                <h4>
-                                    <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Lorem ipsum dolor sit amet, cosec eteture adipiscing.</a>
-                                </h4>
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Read More <i class="fa fa-long-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
+                    <?php endif; ?>
                 </div>
+                
+                <!-- Pagination -->
+                <?php if ($total_pages > 1): ?>
                 <div class="pagination-content number">
-                    <ul class="pagination">
-                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html#"><i class="fa fa-caret-left"></i></a></li>
-                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html#">1</a></li>
-                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html#">2</a></li>
-                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html#">3</a></li>
-                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html#">4</a></li>
-                        <li class="current"><a href="https://demo.hasthemes.com/jones-preview/jones/course.html#"><i class="fa fa-caret-right"></i></a></li>
+                    <ul class="pagination justify-content-center">
+                        <!-- Previous Page -->
+                        <li class="page-item <?php echo ($current_page <= 1) ? 'disabled' : ''; ?>">
+                            <a class="page-link" href="?page=<?php echo $current_page - 1; ?>" aria-label="Previous">
+                                <i class="fa fa-caret-left"></i>
+                            </a>
+                        </li>
+                        
+                        <!-- Page Numbers -->
+                        <?php 
+                        $start_page = max(1, $current_page - 2);
+                        $end_page = min($total_pages, $current_page + 2);
+                        
+                        if ($start_page > 1) {
+                            echo '<li class="page-item"><a class="page-link" href="?page=1">1</a></li>';
+                            if ($start_page > 2) {
+                                echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                            }
+                        }
+                        
+                        for ($i = $start_page; $i <= $end_page; $i++): ?>
+                            <li class="page-item <?php echo ($i == $current_page) ? 'active' : ''; ?>">
+                                <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                            </li>
+                        <?php endfor;
+                        
+                        if ($end_page < $total_pages) {
+                            if ($end_page < $total_pages - 1) {
+                                echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                            }
+                            echo '<li class="page-item"><a class="page-link" href="?page='.$total_pages.'">'.$total_pages.'</a></li>';
+                        }
+                        ?>
+                        
+                        <!-- Next Page -->
+                        <li class="page-item <?php echo ($current_page >= $total_pages) ? 'disabled' : ''; ?>">
+                            <a class="page-link" href="?page=<?php echo $current_page + 1; ?>" aria-label="Next">
+                                <i class="fa fa-caret-right"></i>
+                            </a>
+                        </li>
                     </ul>
                 </div>
+                <?php endif; ?>
             </div>
         </section>
         <!-- Course Area End -->
-        <!-- Newsletter Area Start -->
-        <section class="newsletter-area text-center">
-            <div class="container">
-                <div class="newsletter-wrapper bg-green">
-                    <div class="row">
-                        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                            <div class="newsletter-title">
-                                <h3>Subscribe to get a free update </h3>
-                                <p>Proin accumsan est ac iaculis ullamcorper. Integer euismod hendrerit urna Quisque a varius augue, sed elementum lacus. Integer convallis quis </p>
-                            </div>
-                            <div class="newsletter-form mc_embed_signup">
-                                <form action="http://devitems.us11.list-manage.com/subscribe/post?u=6bbb9b6f5827bd842d9640c82&amp;id=05d85f18ef" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate="">
-                                    <div id="mc_embed_signup_scroll" class="mc-form">
-                                        <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="Enter your email" required="">
-                                        <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
-                                        <div class="mc-news" aria-hidden="true"><input type="text" name="b_6bbb9b6f5827bd842d9640c82_05d85f18ef" tabindex="-1" value=""></div>
-                                        <button id="mc-embedded-subscribe" type="submit" name="subscribe"><i class="fa fa-envelope-open"></i></button>
-                                    </div>
-                                    <a href="https://demo.hasthemes.com/jones-preview/jones/course.html#" class="default-btn">Subscribe us</a>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- Newsletter Area End -->
+
         <!-- Footer Area Start -->
         <footer class="footer-area">
             <div class="footer-top bg-dark-blue">
@@ -404,7 +187,7 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                         <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                             <div class="single-footer-widget">
                                 <div class="footer-logo">
-                                    <a href="https://demo.hasthemes.com/jones-preview/jones/index.html"><img src="./course_files/footer-logo.png" alt="Jones"></a>
+                                    <a href="index.php"><img src="./course_files/footer-logo.png" alt="Jones"></a>
                                 </div>
                             </div>
                         </div>
@@ -429,9 +212,9 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                             <div class="single-footer-widget">
                                 <h4>links</h4>
                                 <ul class="footer-widget-list">
-                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/about.html">About us</a></li>
+                                    <li><a href="about.php">About us</a></li>
                                     <li><a href="https://demo.hasthemes.com/jones-preview/jones/signup.html">register</a></li>
-                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html">Courses</a></li>
+                                    <li><a href="course.php">Courses</a></li>
                                     <li><a href="https://demo.hasthemes.com/jones-preview/jones/event.html">Event</a></li>
                                     <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html">Blog</a></li>
                                     <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html#">FAQ</a></li>
