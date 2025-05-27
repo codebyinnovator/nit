@@ -666,15 +666,19 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                         </div>
                         <div class="signup-form-container sign-up-box">
                             <h3 class="sub-title">Login with your site account</h3>
-                            <form action="https://demo.hasthemes.com/jones-preview/jones/course-details.html#" method="post" class="signup-form">
-                                <input type="text" placeholder="User Name Or Email" name="f_name">
-                                <input type="password" placeholder="Password" name="password">
+                            <form action="admin/actions/login.php" method="post" class="signup-form">
+                                <input type="text" placeholder="Username or Email" name="identifier" required>
+                                <input type="password" placeholder="Password" name="password" required>
                                 <div class="from-wrap">
-                                    <div class="form-left"><input type="checkbox"> Remember Me</div>
-                                    <div class="form-right"><a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html#">Lost Your Password?</a></div>
+                                    <div class="form-left">
+                                        <input type="checkbox" name="remember"> Remember Me
+                                    </div>
+                                    <div class="form-right">
+                                        <a href="#">Lost Your Password?</a>
+                                    </div>
                                 </div>
                                 <button type="submit" class="default-btn">Login</button>
-                                <p>Not a Member Yet? <a href="https://demo.hasthemes.com/jones-preview/jones/signup.html">Register Now</a></p>
+                                <p>Not a Member Yet? <a href="signup.php">Register Now</a></p>
                             </form>
                         </div>
                     </div>	
