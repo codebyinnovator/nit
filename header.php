@@ -5,11 +5,11 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
 </style>
         
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>Jones - Education HTML Template</title>
-        <meta name="description" content="">
+        <title>NiT College | nit.com.mm</title>
+        <meta name="description" content="NiT College was established in 2019, now teaching NCC UK Diplomas and Bachelor classes related to IT and Business majors with online and offline by many experienced teachers.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         
-        <link rel="apple-touch-icon" href="https://demo.hasthemes.com/jones-preview/jones/apple-touch-icon.png">
+        <link rel="apple-touch-icon" href="https://nit.com.mm/assets/img/favicon.png">
         <!-- Place favicon.ico in the root directory -->
         
         <link rel="stylesheet" href="./Jones - Education HTML Template_files/bootstrap.min.css">
@@ -46,8 +46,8 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                                         <li><a href="https://demo.hasthemes.com/jones-preview/jones/index.html#">French</a></li>
                                     </ul>
                                 </div> -->
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/signup.html"><i class="fa fa-user"></i>sign up</a>
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/index.html#" class="modal-view button" data-toggle="modal" data-target="#login_box"><i class="fa fa-lock"></i>login</a>
+                                <a href="signup.html"><i class="fa fa-user"></i>sign up</a>
+                                <a href="index.html#" class="modal-view button" data-toggle="modal" data-target="#login_box"><i class="fa fa-lock"></i>login</a>
                             </div>
                         </div>
                     </div>
@@ -58,7 +58,7 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                     <div class="row">
                         <div class="col-lg-3 col-md-2 col-sm-7 col-xs-7">
                             <div class="logo">
-                                <a href="index.php"><img src="./Jones - Education HTML Template_files/logo.png" alt="Jones"></a>
+                                <a href="index.php"><img src="./img/logo1.png" alt="Jones"></a>
                             </div>
                         </div>
                         <div class="col-lg-9 col-md-10 col-sm-5 col-xs-5">
@@ -80,40 +80,38 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                                                         <li><a href="#">Course Details</a></li>
                                                     </ul>
                                                 </li>
-                                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/event.html">Event</a>
+                                                <li><a href="event.html">Event</a>
                                                     <ul>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/event-details.html">Event Details</a></li>
+                                                        <li><a href="event-details.html">Event Details</a></li>
                                                     </ul>
                                                 </li>
-                                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html">Blog</a>
+                                                <li><a href="blog.html">Blog</a>
                                                     <ul>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog-left-sidebar.html">Blog Left Sidebar</a>
-                                                        </li><li><a href="https://demo.hasthemes.com/jones-preview/jones/blog-details.html">Blog Details</a>
+                                                        <li><a href="blog-left-sidebar.html">Blog Left Sidebar</a>
+                                                        </li><li><a href="blog-details.html">Blog Details</a>
                                                     </li></ul>
                                                 </li>
-                                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html">Pages</a>
+                                                <li><a href="blog.html">Pages</a>
                                                     <ul>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/about.html">About Page</a></li>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html">Courses Page</a></li>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Course Details</a></li>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/event.html">Event Page</a></li>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/event-details.html">Event Details</a></li>
-                                                        <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html">Blog Page</a>
-                                                        </li><li><a href="https://demo.hasthemes.com/jones-preview/jones/blog-details.html">Blog Details</a>
-                                                        </li><li><a href="https://demo.hasthemes.com/jones-preview/jones/blog-left-sidebar.html">Blog Left Sidebar</a>
-                                                        </li><li><a href="https://demo.hasthemes.com/jones-preview/jones/membership.html">Membership</a>
-                                                        </li><li><a href="https://demo.hasthemes.com/jones-preview/jones/signup.html">Signup Page</a>
-                                                        </li><li><a href="https://demo.hasthemes.com/jones-preview/jones/contact.html">Contact Page</a>
+                                                        <li><a href="about.php">About Page</a></li>
+                                                        <li><a href="course.php">Courses Page</a></li>
+                                                        <li><a href="course-details.php">Course Details</a></li>
+                                                        <li><a href="event.php">Event Page</a></li>
+                                                        <li><a href="event-details.php">Event Details</a></li>
+                                                        <li><a href="blog.php">Blog Page</a>
+                                                        </li><li><a href="blog-details.php">Blog Details</a>
+                                                        </li><li><a href="signup.php">Signup Page</a>
+                                                        </li><li><a href="contact.php">Contact Page</a>
                                                     </li></ul>
                                                 </li>
-                                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/contact.html">Contact</a></li>
-                                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/index.html#">Buy Now</a>
+                                                <li><a href="contact.html">Contact</a></li>
+                                                <li><a href="index.html#">Buy Now</a>
                                             </li></ul>
                                         </nav>
                                     </div>
                                 </div>
                                 <div class="search-content">
-                                    <a class="modal-view button" href="https://demo.hasthemes.com/jones-preview/jones/index.html#" data-toggle="modal" data-target="#search_box"><i class="fa fa-search"></i></a>
+                                    <a class="modal-view button" href="index.html#" data-toggle="modal" data-target="#search_box"><i class="fa fa-search"></i></a>
                                 </div>
                             </div>
                         </div>

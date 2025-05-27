@@ -16,7 +16,7 @@
                                         <div class="mc-news" aria-hidden="true"><input type="text" name="b_6bbb9b6f5827bd842d9640c82_05d85f18ef" tabindex="-1" value=""></div>
                                         <button id="mc-embedded-subscribe" type="submit" name="subscribe"><i class="fa fa-envelope-open"></i></button>
                                     </div>
-                                    <a href="https://demo.hasthemes.com/jones-preview/jones/index.html#" class="default-btn">Subscribe us</a>
+                                    <a href="index.php#" class="default-btn">Subscribe us</a>
                                 </form>
                             </div>
                         </div>
@@ -58,11 +58,11 @@
                                 <h4>links</h4>
                                 <ul class="footer-widget-list">
                                     <li><a href="about.php">About us</a></li>
-                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/signup.html">register</a></li>
+                                    <li><a href="signup.html">register</a></li>
                                     <li><a href="course.php">Courses</a></li>
-                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/event.html">Event</a></li>
-                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html">Blog</a></li>
-                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/index.html#">FAQ</a></li>
+                                    <li><a href="event.html">Event</a></li>
+                                    <li><a href="blog.html">Blog</a></li>
+                                    <li><a href="index.html#">FAQ</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -70,20 +70,20 @@
                             <div class="single-footer-widget">
                                 <h4>Recent Course</h4>
                                 <div class="footer-post-item">
-                                    <a href="https://demo.hasthemes.com/jones-preview/jones/blog-details.html">
+                                    <a href="blog-details.html">
                                         <img src="./Jones - Education HTML Template_files/1(3).jpg" alt="">
                                     </a>
                                     <div class="footer-post-text">
-                                        <h3><a href="https://demo.hasthemes.com/jones-preview/jones/blog-details.html">Duis non elit risus Etiams.</a></h3>
+                                        <h3><a href="blog-details.html">Duis non elit risus Etiams.</a></h3>
                                         <span><i class="fa fa-clock-o"></i>10.30 AM - 15.30 PM</span>
                                     </div>
                                 </div>
                                 <div class="footer-post-item">
-                                    <a href="https://demo.hasthemes.com/jones-preview/jones/blog-details.html">
+                                    <a href="blog-details.html">
                                         <img src="./Jones - Education HTML Template_files/2(3).jpg" alt="">
                                     </a>
                                     <div class="footer-post-text">
-                                        <h3><a href="https://demo.hasthemes.com/jones-preview/jones/blog-details.html">Lorem ipsum idisus miats</a></h3>
+                                        <h3><a href="blog-details.html">Lorem ipsum idisus miats</a></h3>
                                         <span><i class="fa fa-clock-o"></i>12.30 AM - 19.30 PM</span>
                                     </div>
                                 </div>
@@ -97,7 +97,7 @@
                     <div class="row">
                         <div class="col-md-12 text-center">
                             <span class="footer-text">
-                                ©  2021 Jones Mede with ❤️ by  <a href="https://hasthemes.com/" target="_blank">HasThemes</a>
+                               © 2025 <a href="https://nit.com.mm/" target="_blank">NIT COLLEGE.</a> All rights reserved. 
                             </span>
                         </div>
                     </div>

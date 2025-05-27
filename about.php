@@ -160,7 +160,7 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
         <div class="breadcrumb-area">
             <div class="container">
                 <ul class="breadcrumb style-two">
-                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/index.html">Home</a></li>
+                    <li><a href="index.php">Home</a></li>
                     <li>About Us</li>
                 </ul>
             </div>
@@ -333,11 +333,11 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                                 <h4>links</h4>
                                 <ul class="footer-widget-list">
                                     <li><a href="about.php">About us</a></li>
-                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/signup.html">register</a></li>
+                                    <li><a href="signup.php">register</a></li>
                                     <li><a href="course.php">Courses</a></li>
-                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/event.html">Event</a></li>
-                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html">Blog</a></li>
-                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/about.html#">FAQ</a></li>
+                                    <li><a href="event.php">Event</a></li>
+                                    <li><a href="blog.php">Blog</a></li>
+                                    <li><a href="about.php">FAQ</a></li>
                                 </ul>
                             </div>
                         </div>
