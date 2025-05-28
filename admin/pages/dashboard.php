@@ -61,7 +61,7 @@
           </a>
         </li>
         <li class="nav-item">
-                    <a class="nav-link active bg-gradient-dark text-white" data-bs-toggle="collapse" href="#blogMenu" role="button" aria-expanded="false" aria-controls="blogMenu">
+                    <a class="nav-link text-dark" data-bs-toggle="collapse" href="#blogMenu" role="button" aria-expanded="false" aria-controls="blogMenu">
                         <i class="material-symbols-rounded opacity-5">article</i>
                         <span class="nav-link-text ms-1">Blog</span>
                     </a>
@@ -89,6 +89,13 @@
             <span class="nav-link-text ms-1">Billing</span>
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="../pages/admin_accounts.php">
+            <i class="material-symbols-rounded opacity-5">supervisor_account</i>
+            <span class="nav-link-text ms-1">Admin Accounts</span>
+          </a>
+        </li>
+
         <li class="nav-item">
           <a class="nav-link text-dark" href="../pages/virtual-reality.html">
             <i class="material-symbols-rounded opacity-5">view_in_ar</i>

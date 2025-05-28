@@ -1,0 +1,14 @@
+RewriteEngine On
+
+# Only allow access to sign-in and static files (CSS/JS/Images)
+RewriteCond %{REQUEST_URI} ^/admin/pages
+RewriteCond %{REQUEST_URI} !/admin/pages/sign-in(\.php|\.html)?$ [NC]
+RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$ [NC]
+
+# Check if session is NOT set
+php_value session.auto_start 1
+php_value session.use_cookies 1
+
+# Require a PHP session to access protected pages
+RewriteCond %{HTTP_COOKIE} !PHPSESSID
+RewriteRule ^ - [F,L]
