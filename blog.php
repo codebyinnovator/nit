@@ -60,7 +60,7 @@
                                     <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html#">French</a></li>
                                 </ul>
                             </div>
-                            <a href="https://demo.hasthemes.com/jones-preview/jones/signup.html"><i class="fa fa-user"></i>sign up</a>
+                            <a href="signup.php"><i class="fa fa-user"></i>sign up</a>
                             <a href="https://demo.hasthemes.com/jones-preview/jones/blog.html#" class="modal-view button" data-toggle="modal" data-target="#login_box"><i class="fa fa-lock"></i>login</a>
                         </div>
                     </div>
@@ -81,56 +81,31 @@
                                 <div class="main-menu mean-menu">
                                     <nav style="display: block;">
                                         <ul>
-                                            <li class="active"><a href="https://demo.hasthemes.com/jones-preview/jones/index.html">Home</a>
+                                            <li class="active"><a href="index.html">Home</a>
+
+                                            </li>
+                                            <li><a href="about.php">About</a></li>
+                                            <li><a href="course.php">Courses</a>
+
+                                            </li>
+                                            <li><a href="event.php">Event</a>
+
+                                            </li>
+                                            <li><a href="blog.php">Blog</a>
+
+                                            </li>
+                                            <li><a href="#">Pages</a>
                                                 <ul>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/index.html">Homepage One</a></li>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/index-2.html">Homepage Two</a></li>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/index-3.html">Homepage Three</a></li>
+                                                    <li><a href="about.php">About Page</a></li>
+                                                    <li><a href="course.php">Courses Page</a></li>
+                                                    <li><a href="event.php">Event Page</a></li>
+                                                    <li><a href="blog.php">Blog Page</a>
+                                                    </li>
+
                                                 </ul>
                                             </li>
-                                            <li><a href="https://demo.hasthemes.com/jones-preview/jones/about.html">About</a></li>
-                                            <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html">Courses</a>
-                                                <ul>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Course Details</a></li>
-                                                </ul>
-                                            </li>
-                                            <li><a href="https://demo.hasthemes.com/jones-preview/jones/event.html">Event</a>
-                                                <ul>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/event-details.html">Event Details</a></li>
-                                                </ul>
-                                            </li>
-                                            <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html">Blog</a>
-                                                <ul>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog-left-sidebar.html">Blog Left Sidebar</a>
-                                                    </li>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog-details.html">Blog Details</a>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                            <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html">Pages</a>
-                                                <ul>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/about.html">About Page</a></li>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html">Courses Page</a></li>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/course-details.html">Course Details</a></li>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/event.html">Event Page</a></li>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/event-details.html">Event Details</a></li>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html">Blog Page</a>
-                                                    </li>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog-details.html">Blog Details</a>
-                                                    </li>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog-left-sidebar.html">Blog Left Sidebar</a>
-                                                    </li>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/membership.html">Membership</a>
-                                                    </li>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/signup.html">Signup Page</a>
-                                                    </li>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/contact.html">Contact Page</a>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                            <li><a href="https://demo.hasthemes.com/jones-preview/jones/contact.html">Contact</a></li>
-                                            <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html#">Buy Now</a>
-                                            </li>
+                                            <li><a href="contact.html">Contact</a></li>
+
                                         </ul>
                                     </nav>
                                 </div>
@@ -299,7 +274,7 @@
                             <h4>links</h4>
                             <ul class="footer-widget-list">
                                 <li><a href="https://demo.hasthemes.com/jones-preview/jones/about.html">About us</a></li>
-                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/signup.html">register</a></li>
+                                <li><a href="signup.php">register</a></li>
                                 <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html">Courses</a></li>
                                 <li><a href="https://demo.hasthemes.com/jones-preview/jones/event.html">Event</a></li>
                                 <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html">Blog</a></li>

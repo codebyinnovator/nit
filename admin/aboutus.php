@@ -3,87 +3,95 @@ include("../connect.php");
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Handle section updates
-    if (isset($_POST['update_section'])) {
-        $id = $_POST['id'];
-        $section_type = $_POST['section_type'];
-        $title = $_POST['title'];
-        $content = $_POST['content'];
-        $video_url = $_POST['video_url'];
-        $mission_title = $_POST['mission_title'] ?? '';
-        $mission_content = $_POST['mission_content'] ?? '';
-        
-        // Handle main image upload
-        $image_path = $_POST['current_image'] ?? '';
-        if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
-            $upload_dir = '../about-images/';
-            $file_name = uniqid() . '_' . basename($_FILES['image']['name']);
-            $target_path = $upload_dir . $file_name;
-            
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $target_path)) {
-                $image_path = 'about-images/' . $file_name;
-                // Delete old image if exists
-                if (!empty($_POST['current_image']) && file_exists('../' . $_POST['current_image'])) {
-                    unlink('../' . $_POST['current_image']);
-                }
-            }
+  // Handle section updates
+  if (isset($_POST['update_section'])) {
+    $id = $_POST['id'];
+    $section_type = $_POST['section_type'];
+    $title = $_POST['title'];
+    $content = $_POST['content'];
+    $video_url = $_POST['video_url'];
+    $mission_title = $_POST['mission_title'] ?? '';
+    $mission_content = $_POST['mission_content'] ?? '';
+
+    // Handle main image upload
+    $image_path = $_POST['current_image'] ?? '';
+    if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
+      $upload_dir = '../about-images/';
+      $file_name = uniqid() . '_' . basename($_FILES['image']['name']);
+      $target_path = $upload_dir . $file_name;
+
+      if (move_uploaded_file($_FILES['image']['tmp_name'], $target_path)) {
+        $image_path = 'about-images/' . $file_name;
+        // Delete old image if exists
+        if (!empty($_POST['current_image']) && file_exists('../' . $_POST['current_image'])) {
+          unlink('../' . $_POST['current_image']);
         }
-        
-        // Handle mission image upload
-        $mission_image_path = $_POST['current_mission_image'] ?? '';
-        if (isset($_FILES['mission_image']) && $_FILES['mission_image']['error'] == UPLOAD_ERR_OK) {
-            $upload_dir = '../about-images/';
-            $file_name = uniqid() . '_' . basename($_FILES['mission_image']['name']);
-            $target_path = $upload_dir . $file_name;
-            
-            if (move_uploaded_file($_FILES['mission_image']['tmp_name'], $target_path)) {
-                $mission_image_path = 'about-images/' . $file_name;
-                // Delete old image if exists
-                if (!empty($_POST['current_mission_image']) && file_exists('../' . $_POST['current_mission_image'])) {
-                    unlink('../' . $_POST['current_mission_image']);
-                }
-            }
+      }
+    }
+
+    // Handle mission image upload
+    $mission_image_path = $_POST['current_mission_image'] ?? '';
+    if (isset($_FILES['mission_image']) && $_FILES['mission_image']['error'] == UPLOAD_ERR_OK) {
+      $upload_dir = '../about-images/';
+      $file_name = uniqid() . '_' . basename($_FILES['mission_image']['name']);
+      $target_path = $upload_dir . $file_name;
+
+      if (move_uploaded_file($_FILES['mission_image']['tmp_name'], $target_path)) {
+        $mission_image_path = 'about-images/' . $file_name;
+        // Delete old image if exists
+        if (!empty($_POST['current_mission_image']) && file_exists('../' . $_POST['current_mission_image'])) {
+          unlink('../' . $_POST['current_mission_image']);
         }
-        
-        $stmt = $conn->prepare("UPDATE about_sections SET 
+      }
+    }
+
+    $stmt = $conn->prepare("UPDATE about_sections SET 
             section_type=?, title=?, content=?, video_url=?, 
             image_path=?, mission_title=?, mission_content=?, mission_image_path=? 
             WHERE id=?");
-        $stmt->bind_param("ssssssssi", 
-            $section_type, $title, $content, $video_url, 
-            $image_path, $mission_title, $mission_content, $mission_image_path, 
-            $id);
-        
-        if ($stmt->execute()) {
-            $message = "Section updated successfully!";
-        } else {
-            $error = "Error updating section: " . $conn->error;
+    $stmt->bind_param(
+      "ssssssssi",
+      $section_type,
+      $title,
+      $content,
+      $video_url,
+      $image_path,
+      $mission_title,
+      $mission_content,
+      $mission_image_path,
+      $id
+    );
+
+    if ($stmt->execute()) {
+      $message = "Section updated successfully!";
+    } else {
+      $error = "Error updating section: " . $conn->error;
+    }
+  }
+
+  // Handle team member updates
+  if (isset($_POST['update_team'])) {
+    $id = $_POST['id'];
+    $name = $_POST['name'];
+    $position = $_POST['position'];
+    $bio = $_POST['bio'];
+
+    // Handle image upload
+    $image_path = $_POST['current_image'];
+    if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
+      $upload_dir = '../team/';
+      $file_name = uniqid() . '_' . basename($_FILES['image']['name']);
+      $target_path = $upload_dir . $file_name;
+
+      if (move_uploaded_file($_FILES['image']['tmp_name'], $target_path)) {
+        $image_path = 'team/' . $file_name;
+        // Delete old image if exists
+        if (!empty($_POST['current_image']) && file_exists('../' . $_POST['current_image'])) {
+          unlink('../' . $_POST['current_image']);
         }
+      }
     }
-    
-    // Handle team member updates
-    if (isset($_POST['update_team'])) {
-        $id = $_POST['id'];
-        $name = $_POST['name'];
-        $position = $_POST['position'];
-        $bio = $_POST['bio'];
-        
-        // Handle image upload
-        $image_path = $_POST['current_image'];
-        if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
-            $upload_dir = '../team/';
-            $file_name = uniqid() . '_' . basename($_FILES['image']['name']);
-            $target_path = $upload_dir . $file_name;
-            
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $target_path)) {
-                $image_path = 'team/' . $file_name;
-                // Delete old image if exists
-                if (!empty($_POST['current_image']) && file_exists('../' . $_POST['current_image'])) {
-                    unlink('../' . $_POST['current_image']);
-                }
-            }
-        }           
-    }
+  }
 }
 
 // Fetch all sections
@@ -91,11 +99,11 @@ $sections = $conn->query("SELECT * FROM about_sections");
 $nit_section = $ncc_section = null;
 
 while ($section = $sections->fetch_assoc()) {
-    if ($section['section_type'] == 'nit') {
-        $nit_section = $section;
-    } elseif ($section['section_type'] == 'ncc') {
-        $ncc_section = $section;
-    }
+  if ($section['section_type'] == 'nit') {
+    $nit_section = $section;
+  } elseif ($section['section_type'] == 'ncc') {
+    $ncc_section = $section;
+  }
 }
 ?>
 
@@ -122,61 +130,71 @@ while ($section = $sections->fetch_assoc()) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <!-- CSS Files -->
-  <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />  
+  <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />
   <style>
-        input, textarea, select {
-            border: 1px solid #ccc !important;
-            padding: 8px !important;
-            border-radius: 4px !important;
-            font-size: 14px !important;
-        }
-        body {
-            background-color: #f8f9fa;
-            padding: 20px;
-        }
-        .section-tab {
-            margin-bottom: 30px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        .section-tab h2 {
-            background-color: #343a40;
-            color: white;
-            padding: 10px 15px;
-            margin: 0;
-        }
-        .section-tab-content {
-            padding: 20px;
-            background-color: white;
-        }
-        .image-preview {
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            padding: 5px;
-        }
-        .form-section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-        }
-        .video-preview {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            margin-bottom: 15px;
-        }
-        .video-preview iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
+    input,
+    textarea,
+    select {
+      border: 1px solid #ccc !important;
+      padding: 8px !important;
+      border-radius: 4px !important;
+      font-size: 14px !important;
+    }
+
+    body {
+      background-color: #f8f9fa;
+      padding: 20px;
+    }
+
+    .section-tab {
+      margin-bottom: 30px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .section-tab h2 {
+      background-color: #343a40;
+      color: white;
+      padding: 10px 15px;
+      margin: 0;
+    }
+
+    .section-tab-content {
+      padding: 20px;
+      background-color: white;
+    }
+
+    .image-preview {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      padding: 5px;
+    }
+
+    .form-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+    }
+
+    .video-preview {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .video-preview iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
   </style>
 </head>
 
@@ -193,17 +211,48 @@ while ($section = $sections->fetch_assoc()) {
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link active bg-gradient-dark text-white" href="dashboard.php">
+          <a class="nav-link text-dark" href="dashboard.php">
             <i class="material-symbols-rounded opacity-5">dashboard</i>
             <span class="nav-link-text ms-1">Dashboard</span>
           </a>
-        </li>       
+        </li>
         <li class="nav-item">
           <a class="nav-link text-dark" href="home.php">
             <i class="material-symbols-rounded opacity-5">home</i>
             <span class="nav-link-text ms-1">Home</span>
           </a>
-        </li>       
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark" data-bs-toggle="collapse" href="#blogMenu" role="button" aria-expanded="false" aria-controls="blogMenu">
+            <i class="material-symbols-rounded opacity-5">article</i>
+            <span class="nav-link-text ms-1">Blog</span>
+          </a>
+
+          <div class="collapse ms-4" id="blogMenu">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link text-dark" href="view-blog.php">
+                  <i class="material-symbols-rounded opacity-5">visibility</i>
+                  <span class="nav-link-text ms-1">View Blogs</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-dark" href="blog-create.php">
+                  <i class="material-symbols-rounded opacity-5">add_circle</i>
+                  <span class="nav-link-text ms-1">Create Blog</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="admin_accounts.php">
+            <i class="material-symbols-rounded opacity-5">supervisor_account</i>
+            <span class="nav-link-text ms-1">Admin Accounts</span>
+          </a>
+        </li>
         <li class="nav-item">
           <a class="nav-link text-dark" href="courses.php">
             <i class="material-symbols-rounded opacity-5">school</i>
@@ -211,7 +260,7 @@ while ($section = $sections->fetch_assoc()) {
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-dark" href="aboutus.php">
+          <a class="nav-link active bg-gradient-dark text-white" href="aboutus.php">
             <i class="material-symbols-rounded opacity-5">info</i>
             <span class="nav-link-text ms-1">About Us</span>
           </a>
@@ -223,7 +272,7 @@ while ($section = $sections->fetch_assoc()) {
           </a>
         </li>
       </ul>
-    </div>    
+    </div>
   </aside>
   <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
     <!-- Navbar -->
@@ -232,7 +281,7 @@ while ($section = $sections->fetch_assoc()) {
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Dashboard</li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">About Us</li>
           </ol>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
@@ -242,7 +291,7 @@ while ($section = $sections->fetch_assoc()) {
               <input type="text" class="form-control">
             </div>
           </div>
-          <ul class="navbar-nav d-flex align-items-center  justify-content-end">            
+          <ul class="navbar-nav d-flex align-items-center  justify-content-end">
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                 <div class="sidenav-toggler-inner">
@@ -342,137 +391,137 @@ while ($section = $sections->fetch_assoc()) {
     <!-- End Navbar -->
     <div class="container">
       <h1 class="mb-4">Manage About Page</h1>
-      
+
       <?php if (isset($message)): ?>
-          <div class="alert alert-success"><?php echo $message; ?></div>
+        <div class="alert alert-success"><?php echo $message; ?></div>
       <?php endif; ?>
-      
+
       <!-- NiT Section -->
       <div class="section-tab">
-          <h2>About NiT</h2>
-          <div class="section-tab-content">
-              <form method="POST" enctype="multipart/form-data">
-                  <input type="hidden" name="update_section" value="1">
-                  <input type="hidden" name="id" value="<?php echo $nit_section['id'] ?? ''; ?>">
-                  <input type="hidden" name="section_type" value="nit">
-                  <input type="hidden" name="current_image" value="<?php echo $nit_section['image_path'] ?? ''; ?>">
-                  
-                  <div class="form-section">
-                      <h3>Main Content</h3>
-                      <div class="mb-3">
-                          <label class="form-label">Title</label>
-                          <input type="text" class="form-control" name="title" 
-                                  value="<?php echo $nit_section['title'] ?? 'About NiT'; ?>">
-                      </div>
-                      
-                      <div class="mb-3">
-                          <label class="form-label">Description</label>
-                          <textarea class="form-control" name="content" rows="5"><?php 
-                              echo $nit_section['content'] ?? ''; 
-                          ?></textarea>
-                      </div>
-                      
-                      <div class="mb-3">
-                          <label class="form-label">YouTube Video URL</label>
-                          <input type="text" class="form-control" name="video_url" 
-                                  value="<?php echo $nit_section['video_url'] ?? ''; ?>">
-                          <?php if (!empty($nit_section['video_url'])): ?>
-                              <div class="video-preview mt-2">
-                                  <iframe src="https://www.youtube.com/embed/<?php echo getYouTubeId($nit_section['video_url']); ?>" 
-                                          frameborder="0" allowfullscreen></iframe>
-                              </div>
-                          <?php endif; ?>
-                      </div>
+        <h2>About NiT</h2>
+        <div class="section-tab-content">
+          <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="update_section" value="1">
+            <input type="hidden" name="id" value="<?php echo $nit_section['id'] ?? ''; ?>">
+            <input type="hidden" name="section_type" value="nit">
+            <input type="hidden" name="current_image" value="<?php echo $nit_section['image_path'] ?? ''; ?>">
+
+            <div class="form-section">
+              <h3>Main Content</h3>
+              <div class="mb-3">
+                <label class="form-label">Title</label>
+                <input type="text" class="form-control" name="title"
+                  value="<?php echo $nit_section['title'] ?? 'About NiT'; ?>">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" name="content" rows="5"><?php
+                                                                        echo $nit_section['content'] ?? '';
+                                                                        ?></textarea>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">YouTube Video URL</label>
+                <input type="text" class="form-control" name="video_url"
+                  value="<?php echo $nit_section['video_url'] ?? ''; ?>">
+                <?php if (!empty($nit_section['video_url'])): ?>
+                  <div class="video-preview mt-2">
+                    <iframe src="https://www.youtube.com/embed/<?php echo getYouTubeId($nit_section['video_url']); ?>"
+                      frameborder="0" allowfullscreen></iframe>
                   </div>
-                  
-                  <div class="form-section">
-                      <h3>Full-width Image</h3>
-                      <div class="mb-3">
-                          <label class="form-label">Image (Tall/Portrait Orientation)</label>
-                          <input type="file" class="form-control" name="image">
-                          <?php if (!empty($nit_section['image_path'])): ?>
-                              <div class="mt-2">
-                                  <img src="../<?php echo $nit_section['image_path']; ?>" class="image-preview" style="max-height: 300px;">
-                                  <p>Current image</p>
-                              </div>
-                          <?php endif; ?>
-                      </div>
+                <?php endif; ?>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Full-width Image</h3>
+              <div class="mb-3">
+                <label class="form-label">Image (Tall/Portrait Orientation)</label>
+                <input type="file" class="form-control" name="image">
+                <?php if (!empty($nit_section['image_path'])): ?>
+                  <div class="mt-2">
+                    <img src="../<?php echo $nit_section['image_path']; ?>" class="image-preview" style="max-height: 300px;">
+                    <p>Current image</p>
                   </div>
-                  
-                  <button type="submit" class="btn btn-primary">Update NiT Section</button>
-              </form>
-          </div>
+                <?php endif; ?>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update NiT Section</button>
+          </form>
+        </div>
       </div>
-      
+
       <!-- NCC Section -->
       <div class="section-tab">
-          <h2>About NCC</h2>
-          <div class="section-tab-content">
-              <form method="POST" enctype="multipart/form-data">
-                  <input type="hidden" name="update_section" value="1">
-                  <input type="hidden" name="id" value="<?php echo $ncc_section['id'] ?? ''; ?>">
-                  <input type="hidden" name="section_type" value="ncc">
-                  <input type="hidden" name="current_image" value="<?php echo $ncc_section['image_path'] ?? ''; ?>">
-                  <input type="hidden" name="current_mission_image" value="<?php echo $ncc_section['mission_image_path'] ?? ''; ?>">
-                  
-                  <div class="form-section">
-                      <h3>Main Content</h3>
-                      <div class="mb-3">
-                          <label class="form-label">Title</label>
-                          <input type="text" class="form-control" name="title" 
-                                  value="<?php echo $ncc_section['title'] ?? 'About NCC'; ?>">
-                      </div>
-                      
-                      <div class="mb-3">
-                          <label class="form-label">Description</label>
-                          <textarea class="form-control" name="content" rows="5"><?php 
-                              echo $ncc_section['content'] ?? ''; 
-                          ?></textarea>
-                      </div>
-                      
-                      <div class="mb-3">
-                          <label class="form-label">YouTube Video URL</label>
-                          <input type="text" class="form-control" name="video_url" 
-                                  value="<?php echo $ncc_section['video_url'] ?? ''; ?>">
-                          <?php if (!empty($ncc_section['video_url'])): ?>
-                              <div class="video-preview mt-2">
-                                  <iframe src="https://www.youtube.com/embed/<?php echo getYouTubeId($ncc_section['video_url']); ?>" 
-                                          frameborder="0" allowfullscreen></iframe>
-                              </div>
-                          <?php endif; ?>
-                      </div>
+        <h2>About NCC</h2>
+        <div class="section-tab-content">
+          <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="update_section" value="1">
+            <input type="hidden" name="id" value="<?php echo $ncc_section['id'] ?? ''; ?>">
+            <input type="hidden" name="section_type" value="ncc">
+            <input type="hidden" name="current_image" value="<?php echo $ncc_section['image_path'] ?? ''; ?>">
+            <input type="hidden" name="current_mission_image" value="<?php echo $ncc_section['mission_image_path'] ?? ''; ?>">
+
+            <div class="form-section">
+              <h3>Main Content</h3>
+              <div class="mb-3">
+                <label class="form-label">Title</label>
+                <input type="text" class="form-control" name="title"
+                  value="<?php echo $ncc_section['title'] ?? 'About NCC'; ?>">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" name="content" rows="5"><?php
+                                                                        echo $ncc_section['content'] ?? '';
+                                                                        ?></textarea>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">YouTube Video URL</label>
+                <input type="text" class="form-control" name="video_url"
+                  value="<?php echo $ncc_section['video_url'] ?? ''; ?>">
+                <?php if (!empty($ncc_section['video_url'])): ?>
+                  <div class="video-preview mt-2">
+                    <iframe src="https://www.youtube.com/embed/<?php echo getYouTubeId($ncc_section['video_url']); ?>"
+                      frameborder="0" allowfullscreen></iframe>
                   </div>
-                  
-                  <div class="form-section">
-                      <h3>Our Mission</h3>
-                      <div class="mb-3">
-                          <label class="form-label">Mission Title</label>
-                          <input type="text" class="form-control" name="mission_title" 
-                                  value="<?php echo $ncc_section['mission_title'] ?? 'Our Mission'; ?>">
-                      </div>
-                      
-                      <div class="mb-3">
-                          <label class="form-label">Mission Description</label>
-                          <textarea class="form-control" name="mission_content" rows="5"><?php 
-                              echo $ncc_section['mission_content'] ?? ''; 
-                          ?></textarea>
-                      </div>
-                      
-                      <div class="mb-3">
-                          <label class="form-label">Mission Image</label>
-                          <input type="file" class="form-control" name="mission_image">
-                          <?php if (!empty($ncc_section['mission_image_path'])): ?>
-                              <div class="mt-2">
-                                  <img src="../<?php echo $ncc_section['mission_image_path']; ?>" class="image-preview">
-                                  <p>Current image</p>
-                              </div>
-                          <?php endif; ?>
-                      </div>
+                <?php endif; ?>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Our Mission</h3>
+              <div class="mb-3">
+                <label class="form-label">Mission Title</label>
+                <input type="text" class="form-control" name="mission_title"
+                  value="<?php echo $ncc_section['mission_title'] ?? 'Our Mission'; ?>">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Mission Description</label>
+                <textarea class="form-control" name="mission_content" rows="5"><?php
+                                                                                echo $ncc_section['mission_content'] ?? '';
+                                                                                ?></textarea>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Mission Image</label>
+                <input type="file" class="form-control" name="mission_image">
+                <?php if (!empty($ncc_section['mission_image_path'])): ?>
+                  <div class="mt-2">
+                    <img src="../<?php echo $ncc_section['mission_image_path']; ?>" class="image-preview">
+                    <p>Current image</p>
                   </div>
-                  
-                  <button type="submit" class="btn btn-primary">Update NCC Section</button>
-              </form>
-          </div>
+                <?php endif; ?>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update NCC Section</button>
+          </form>
+        </div>
       </div>
       <footer class="footer py-4  ">
         <div class="container-fluid">
@@ -834,14 +883,16 @@ while ($section = $sections->fetch_assoc()) {
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="../assets/js/material-dashboard.min.js?v=3.2.0"></script>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>
 <?php
-function getYouTubeId($url) {
-    parse_str(parse_url($url, PHP_URL_QUERY), $vars);
-    return $vars['v'] ?? '';
+function getYouTubeId($url)
+{
+  parse_str(parse_url($url, PHP_URL_QUERY), $vars);
+  return $vars['v'] ?? '';
 }
 ?>

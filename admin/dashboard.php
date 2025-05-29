@@ -92,6 +92,18 @@
           </a>
         </li>
         <li class="nav-item">
+          <a class="nav-link text-dark" href="courses.php">
+            <i class="material-symbols-rounded opacity-5">school</i>
+            <span class="nav-link-text ms-1">Courses</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="aboutus.php">
+            <i class="material-symbols-rounded opacity-5">info</i>
+            <span class="nav-link-text ms-1">About Us</span>
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link text-dark" href="instructors.php">
             <i class="material-symbols-rounded opacity-5">school</i>
             <span class="nav-link-text ms-1">Instructor</span>

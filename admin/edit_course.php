@@ -2,73 +2,72 @@
 include("../connect.php");
 
 // Handle form submission
-if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_course'])) {
-    try {
-        // Validate inputs
-        $id = intval($_POST['id']);
-        $title = trim($_POST['title']);
-        $instructor_id = intval($_POST['instructor_id']);
-        $price = floatval($_POST['price']);
-        $duration_months = intval($_POST['duration_months']);
-        $lecture_count = intval($_POST['lecture_count']);
-        $current_image = $_POST['current_image'];
-        
-        if(empty($title) || $instructor_id <= 0 || $price < 0 || $duration_months < 0 || $lecture_count < 0) {
-            throw new Exception("Invalid input data");
-        }
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_course'])) {
+  try {
+    // Validate inputs
+    $id = intval($_POST['id']);
+    $title = trim($_POST['title']);
+    $instructor_id = intval($_POST['instructor_id']);
+    $price = floatval($_POST['price']);
+    $duration_months = intval($_POST['duration_months']);
+    $lecture_count = intval($_POST['lecture_count']);
+    $current_image = $_POST['current_image'];
 
-        // Handle file upload
-        $course_image = $current_image; // Default to current image
-        
-        if(isset($_FILES['course_image']) && $_FILES['course_image']['error'] == UPLOAD_ERR_OK) {
-            // Validate image
-            $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-            $detected_type = mime_content_type($_FILES['course_image']['tmp_name']);
-            
-            if(!in_array($detected_type, $allowed_types)) {
-                throw new Exception("Invalid image type. Only JPG, PNG and GIF are allowed.");
-            }
-            
-            // Delete old image if exists
-            if(!empty($current_image) && file_exists("../".$current_image)) {
-                if(!unlink("../".$current_image)) {
-                    throw new Exception("Failed to delete old image");
-                }
-            }
-            
-            // Upload new image
-            $upload_dir = '../course_images/';
-            if(!file_exists($upload_dir)) {
-                mkdir($upload_dir, 0777, true);
-            }
-            
-            $file_ext = pathinfo($_FILES['course_image']['name'], PATHINFO_EXTENSION);
-            $file_name = uniqid() . '_' . bin2hex(random_bytes(8)) . '.' . $file_ext;
-            $target_path = $upload_dir . $file_name;
-            
-            if(!move_uploaded_file($_FILES['course_image']['tmp_name'], $target_path)) {
-                throw new Exception("Failed to upload image");
-            }
-            
-            $course_image = 'course_images/' . $file_name;
-        }
-        
-        // Update database
-        $stmt = $conn->prepare("UPDATE courses SET title=?, instructor_id=?, price=?, course_image=?, duration_months=?, lecture_count=? WHERE id=?");
-        $stmt->bind_param("sidsiii", $title, $instructor_id, $price, $course_image, $duration_months, $lecture_count, $id);
-        
-        if(!$stmt->execute()) {
-            throw new Exception("Database update failed");
-        }
-        
-        header("Location: courses.php?updated=1");
-        exit();
-        
-    } catch(Exception $e) {
-        error_log("Edit Error: ".$e->getMessage());
-        header("Location: courses.php?error=edit_failed&message=".urlencode($e->getMessage()));
-        exit();
+    if (empty($title) || $instructor_id <= 0 || $price < 0 || $duration_months < 0 || $lecture_count < 0) {
+      throw new Exception("Invalid input data");
     }
+
+    // Handle file upload
+    $course_image = $current_image; // Default to current image
+
+    if (isset($_FILES['course_image']) && $_FILES['course_image']['error'] == UPLOAD_ERR_OK) {
+      // Validate image
+      $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+      $detected_type = mime_content_type($_FILES['course_image']['tmp_name']);
+
+      if (!in_array($detected_type, $allowed_types)) {
+        throw new Exception("Invalid image type. Only JPG, PNG and GIF are allowed.");
+      }
+
+      // Delete old image if exists
+      if (!empty($current_image) && file_exists("../" . $current_image)) {
+        if (!unlink("../" . $current_image)) {
+          throw new Exception("Failed to delete old image");
+        }
+      }
+
+      // Upload new image
+      $upload_dir = '../course_images/';
+      if (!file_exists($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+      }
+
+      $file_ext = pathinfo($_FILES['course_image']['name'], PATHINFO_EXTENSION);
+      $file_name = uniqid() . '_' . bin2hex(random_bytes(8)) . '.' . $file_ext;
+      $target_path = $upload_dir . $file_name;
+
+      if (!move_uploaded_file($_FILES['course_image']['tmp_name'], $target_path)) {
+        throw new Exception("Failed to upload image");
+      }
+
+      $course_image = 'course_images/' . $file_name;
+    }
+
+    // Update database
+    $stmt = $conn->prepare("UPDATE courses SET title=?, instructor_id=?, price=?, course_image=?, duration_months=?, lecture_count=? WHERE id=?");
+    $stmt->bind_param("sidsiii", $title, $instructor_id, $price, $course_image, $duration_months, $lecture_count, $id);
+
+    if (!$stmt->execute()) {
+      throw new Exception("Database update failed");
+    }
+
+    header("Location: courses.php?updated=1");
+    exit();
+  } catch (Exception $e) {
+    error_log("Edit Error: " . $e->getMessage());
+    header("Location: courses.php?error=edit_failed&message=" . urlencode($e->getMessage()));
+    exit();
+  }
 }
 
 // Get course data for editing
@@ -76,23 +75,23 @@ $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $course = [];
 $instructors = [];
 
-if($id > 0) {
-    $stmt = $conn->prepare("SELECT * FROM courses WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $course = $result->fetch_assoc();
-    
-    if(!$course) {
-        header("Location: courses.php?error=course_not_found");
-        exit();
-    }
+if ($id > 0) {
+  $stmt = $conn->prepare("SELECT * FROM courses WHERE id = ?");
+  $stmt->bind_param("i", $id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $course = $result->fetch_assoc();
+
+  if (!$course) {
+    header("Location: courses.php?error=course_not_found");
+    exit();
+  }
 }
 
 // Get all instructors
 $instructors_result = $conn->query("SELECT id, name FROM instructors");
-while($row = $instructors_result->fetch_assoc()) {
-    $instructors[] = $row;
+while ($row = $instructors_result->fetch_assoc()) {
+  $instructors[] = $row;
 }
 ?>
 
@@ -117,16 +116,22 @@ while($row = $instructors_result->fetch_assoc()) {
   <!-- Material Icons -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
   <!-- CSS Files -->
-  <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />  
+  <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />
   <style>
-        .current-image { max-width: 200px; height: auto; }
-        input, textarea, select {
-          border: 1px solid #ccc !important;
-          padding: 8px !important;
-          border-radius: 4px !important;
-          font-size: 14px !important;
-      }
-    </style>
+    .current-image {
+      max-width: 200px;
+      height: auto;
+    }
+
+    input,
+    textarea,
+    select {
+      border: 1px solid #ccc !important;
+      padding: 8px !important;
+      border-radius: 4px !important;
+      font-size: 14px !important;
+    }
+  </style>
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">
@@ -142,19 +147,50 @@ while($row = $instructors_result->fetch_assoc()) {
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link active bg-gradient-dark text-white" href="dashboard.php">
+          <a class="nav-link text-dark" href="dashboard.php">
             <i class="material-symbols-rounded opacity-5">dashboard</i>
             <span class="nav-link-text ms-1">Dashboard</span>
           </a>
-        </li>       
+        </li>
         <li class="nav-item">
           <a class="nav-link text-dark" href="home.php">
             <i class="material-symbols-rounded opacity-5">home</i>
             <span class="nav-link-text ms-1">Home</span>
           </a>
-        </li>       
+        </li>
         <li class="nav-item">
-          <a class="nav-link text-dark" href="courses.php">
+          <a class="nav-link text-dark" data-bs-toggle="collapse" href="#blogMenu" role="button" aria-expanded="false" aria-controls="blogMenu">
+            <i class="material-symbols-rounded opacity-5">article</i>
+            <span class="nav-link-text ms-1">Blog</span>
+          </a>
+
+          <div class="collapse ms-4" id="blogMenu">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link text-dark" href="view-blog.php">
+                  <i class="material-symbols-rounded opacity-5">visibility</i>
+                  <span class="nav-link-text ms-1">View Blogs</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-dark" href="blog-create.php">
+                  <i class="material-symbols-rounded opacity-5">add_circle</i>
+                  <span class="nav-link-text ms-1">Create Blog</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="admin_accounts.php">
+            <i class="material-symbols-rounded opacity-5">supervisor_account</i>
+            <span class="nav-link-text ms-1">Admin Accounts</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active bg-gradient-dark text-white" href="courses.php">
             <i class="material-symbols-rounded opacity-5">school</i>
             <span class="nav-link-text ms-1">Courses</span>
           </a>
@@ -162,7 +198,7 @@ while($row = $instructors_result->fetch_assoc()) {
         <li class="nav-item">
           <a class="nav-link text-dark" href="aboutus.php">
             <i class="material-symbols-rounded opacity-5">info</i>
-            <span class="nav-link-text ms-1">About Us</span>
+            <span class="nav-link-text ms-1">About Uactive bg-gradient-dark text-whites</span>
           </a>
         </li>
         <li class="nav-item">
@@ -172,7 +208,7 @@ while($row = $instructors_result->fetch_assoc()) {
           </a>
         </li>
       </ul>
-    </div>    
+    </div>
   </aside>
   <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
     <!-- Navbar -->
@@ -191,7 +227,7 @@ while($row = $instructors_result->fetch_assoc()) {
               <input type="text" class="form-control">
             </div>
           </div>
-          <ul class="navbar-nav d-flex align-items-center  justify-content-end">            
+          <ul class="navbar-nav d-flex align-items-center  justify-content-end">
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                 <div class="sidenav-toggler-inner">
@@ -290,110 +326,110 @@ while($row = $instructors_result->fetch_assoc()) {
     </nav>
     <!-- End Navbar -->
     <div class="container mt-4">
-        <h2>Edit Course</h2>
-        <a href="courses.php" class="btn btn-secondary mb-3">← Back to Courses</a>
-        
-        <?php if(isset($_GET['error'])): ?>
+      <h2>Edit Course</h2>
+      <a href="courses.php" class="btn btn-secondary mb-3">← Back to Courses</a>
+
+      <?php if (isset($_GET['error'])): ?>
         <div class="alert alert-danger"><?php echo htmlspecialchars($_GET['message'] ?? 'An error occurred'); ?></div>
-        <?php endif; ?>
-        
-        <div class="card">
-            <div class="card-body">
-                <form method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="id" value="<?php echo $course['id'] ?? ''; ?>">
-                    <input type="hidden" name="current_image" value="<?php echo $course['course_image'] ?? ''; ?>">
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Course Title*</label>
-                        <input type="text" name="title" class="form-control" required 
-                               value="<?php echo htmlspecialchars($course['title'] ?? ''); ?>">
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Instructor*</label>
-                        <select name="instructor_id" class="form-control" required>
-                            <option value="">Select Instructor</option>
-                            <?php foreach($instructors as $instructor): ?>
-                            <option value="<?php echo $instructor['id']; ?>" 
-                                <?php if(isset($course['instructor_id']) && $course['instructor_id'] == $instructor['id']) echo 'selected'; ?>>
-                                <?php echo htmlspecialchars($instructor['name']); ?>
-                            </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Price (Ks)* - Enter 0 for free course</label>
-                        <input type="number" step="1" name="price" class="form-control" required min="0"
-                            value="<?php echo isset($course['price']) ? intval($course['price']) : '0'; ?>">
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Duration (months)* - 0 for lifetime</label>
-                                <input type="number" name="duration_months" class="form-control" required min="0"
-                                       value="<?php echo $course['duration_months'] ?? '0'; ?>">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Number of Lectures*</label>
-                                <input type="number" name="lecture_count" class="form-control" required min="0"
-                                       value="<?php echo $course['lecture_count'] ?? '0'; ?>">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Course Image</label>
-                        <?php if(!empty($course['course_image'])): ?>
-                        <div class="mb-2">
-                            <img src="../<?php echo $course['course_image']; ?>" class="current-image img-thumbnail">
-                            <p class="text-muted mt-1">Current image</p>
-                        </div>
-                        <?php endif; ?>
-                        <input type="file" name="course_image" class="form-control" accept="image/jpeg,image/png,image/gif">
-                        <small class="text-muted">Leave blank to keep current image</small>
-                    </div>
-                    
-                    <button type="submit" name="update_course" class="btn btn-primary">Update Course</button>
-                </form>
+      <?php endif; ?>
+
+      <div class="card">
+        <div class="card-body">
+          <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="id" value="<?php echo $course['id'] ?? ''; ?>">
+            <input type="hidden" name="current_image" value="<?php echo $course['course_image'] ?? ''; ?>">
+
+            <div class="mb-3">
+              <label class="form-label">Course Title*</label>
+              <input type="text" name="title" class="form-control" required
+                value="<?php echo htmlspecialchars($course['title'] ?? ''); ?>">
             </div>
-        </div>
-    </div>
-      <footer class="footer py-4  ">
-        <div class="container-fluid">
-          <div class="row align-items-center justify-content-lg-between">
-            <div class="col-lg-6 mb-lg-0 mb-4">
-              <div class="copyright text-center text-sm text-muted text-lg-start">
-                © <script>
-                  document.write(new Date().getFullYear())
-                </script>,
-                made with <i class="fa fa-heart"></i> by
-                <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
-                for a better web.
+
+            <div class="mb-3">
+              <label class="form-label">Instructor*</label>
+              <select name="instructor_id" class="form-control" required>
+                <option value="">Select Instructor</option>
+                <?php foreach ($instructors as $instructor): ?>
+                  <option value="<?php echo $instructor['id']; ?>"
+                    <?php if (isset($course['instructor_id']) && $course['instructor_id'] == $instructor['id']) echo 'selected'; ?>>
+                    <?php echo htmlspecialchars($instructor['name']); ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Price (Ks)* - Enter 0 for free course</label>
+              <input type="number" step="1" name="price" class="form-control" required min="0"
+                value="<?php echo isset($course['price']) ? intval($course['price']) : '0'; ?>">
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Duration (months)* - 0 for lifetime</label>
+                  <input type="number" name="duration_months" class="form-control" required min="0"
+                    value="<?php echo $course['duration_months'] ?? '0'; ?>">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Number of Lectures*</label>
+                  <input type="number" name="lecture_count" class="form-control" required min="0"
+                    value="<?php echo $course['lecture_count'] ?? '0'; ?>">
+                </div>
               </div>
             </div>
-            <div class="col-lg-6">
-              <ul class="nav nav-footer justify-content-center justify-content-lg-end">
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
-                </li>
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
-                </li>
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
-                </li>
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
-                </li>
-              </ul>
+
+            <div class="mb-3">
+              <label class="form-label">Course Image</label>
+              <?php if (!empty($course['course_image'])): ?>
+                <div class="mb-2">
+                  <img src="../<?php echo $course['course_image']; ?>" class="current-image img-thumbnail">
+                  <p class="text-muted mt-1">Current image</p>
+                </div>
+              <?php endif; ?>
+              <input type="file" name="course_image" class="form-control" accept="image/jpeg,image/png,image/gif">
+              <small class="text-muted">Leave blank to keep current image</small>
+            </div>
+
+            <button type="submit" name="update_course" class="btn btn-primary">Update Course</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <footer class="footer py-4  ">
+      <div class="container-fluid">
+        <div class="row align-items-center justify-content-lg-between">
+          <div class="col-lg-6 mb-lg-0 mb-4">
+            <div class="copyright text-center text-sm text-muted text-lg-start">
+              © <script>
+                document.write(new Date().getFullYear())
+              </script>,
+              made with <i class="fa fa-heart"></i> by
+              <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
+              for a better web.
             </div>
           </div>
+          <div class="col-lg-6">
+            <ul class="nav nav-footer justify-content-center justify-content-lg-end">
+              <li class="nav-item">
+                <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
+              </li>
+              <li class="nav-item">
+                <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
+              </li>
+              <li class="nav-item">
+                <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
+              </li>
+              <li class="nav-item">
+                <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
+              </li>
+            </ul>
+          </div>
         </div>
-      </footer>
+      </div>
+    </footer>
     </div>
   </main>
   <div class="fixed-plugin">
@@ -724,4 +760,5 @@ while($row = $instructors_result->fetch_assoc()) {
   <script src="../assets/js/material-dashboard.min.js?v=3.2.0"></script>
 
 </body>
+
 </html>

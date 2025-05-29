@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0058)https://demo.hasthemes.com/jones-preview/jones/signup.html -->
+<!-- saved from url=(0058)signup.php -->
 <html class=" js flexbox canvas canvastext webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers no-applicationcache svg inlinesvg smil svgclippaths" lang="en" style="">
 
 <head>
@@ -55,13 +55,13 @@
                             <div class="btn-group" role="group">
                                 <button type="button" class="dropdown-toggle language" data-toggle="dropdown">Language<i class="fa fa-caret-down"></i></button>
                                 <ul class="dropdown-menu">
-                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/signup.html#">English</a></li>
-                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/signup.html#">Bangla</a></li>
-                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/signup.html#">French</a></li>
+                                    <li><a href="signup.php#">English</a></li>
+                                    <li><a href="signup.php#">Bangla</a></li>
+                                    <li><a href="signup.php#">French</a></li>
                                 </ul>
                             </div>
-                            <a href="https://demo.hasthemes.com/jones-preview/jones/signup.html"><i class="fa fa-user"></i>sign up</a>
-                            <a href="https://demo.hasthemes.com/jones-preview/jones/signup.html#" class="modal-view button" data-toggle="modal" data-target="#login_box"><i class="fa fa-lock"></i>login</a>
+                            <a href="signup.php"><i class="fa fa-user"></i>sign up</a>
+                            <a href="signup.php#" class="modal-view button" data-toggle="modal" data-target="#login_box"><i class="fa fa-lock"></i>login</a>
                         </div>
                     </div>
                 </div>
@@ -122,21 +122,21 @@
                                                     </li>
                                                     <li><a href="https://demo.hasthemes.com/jones-preview/jones/membership.html">Membership</a>
                                                     </li>
-                                                    <li><a href="https://demo.hasthemes.com/jones-preview/jones/signup.html">Signup Page</a>
+                                                    <li><a href="signup.php">Signup Page</a>
                                                     </li>
                                                     <li><a href="https://demo.hasthemes.com/jones-preview/jones/contact.html">Contact Page</a>
                                                     </li>
                                                 </ul>
                                             </li>
                                             <li><a href="https://demo.hasthemes.com/jones-preview/jones/contact.html">Contact</a></li>
-                                            <li><a href="https://demo.hasthemes.com/jones-preview/jones/signup.html#">Buy Now</a>
+                                            <li><a href="signup.php#">Buy Now</a>
                                             </li>
                                         </ul>
                                     </nav>
                                 </div>
                             </div>
                             <div class="search-content">
-                                <a class="modal-view button" href="https://demo.hasthemes.com/jones-preview/jones/signup.html#" data-toggle="modal" data-target="#search_box"><i class="fa fa-search"></i></a>
+                                <a class="modal-view button" href="signup.php#" data-toggle="modal" data-target="#search_box"><i class="fa fa-search"></i></a>
                             </div>
                         </div>
                     </div>
@@ -227,7 +227,7 @@
                                     <div class="mc-news" aria-hidden="true"><input type="text" name="b_6bbb9b6f5827bd842d9640c82_05d85f18ef" tabindex="-1" value=""></div>
                                     <button id="mc-embedded-subscribe" type="submit" name="subscribe"><i class="fa fa-envelope-open"></i></button>
                                 </div>
-                                <a href="https://demo.hasthemes.com/jones-preview/jones/signup.html#" class="default-btn">Subscribe us</a>
+                                <a href="signup.php#" class="default-btn">Subscribe us</a>
                             </form>
                         </div>
                     </div>
@@ -270,11 +270,11 @@
                             <h4>links</h4>
                             <ul class="footer-widget-list">
                                 <li><a href="https://demo.hasthemes.com/jones-preview/jones/about.html">About us</a></li>
-                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/signup.html">register</a></li>
+                                <li><a href="signup.php">register</a></li>
                                 <li><a href="https://demo.hasthemes.com/jones-preview/jones/course.html">Courses</a></li>
                                 <li><a href="https://demo.hasthemes.com/jones-preview/jones/event.html">Event</a></li>
                                 <li><a href="https://demo.hasthemes.com/jones-preview/jones/blog.html">Blog</a></li>
-                                <li><a href="https://demo.hasthemes.com/jones-preview/jones/signup.html#">FAQ</a></li>
+                                <li><a href="signup.php#">FAQ</a></li>
                             </ul>
                         </div>
                     </div>
@@ -326,7 +326,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-close"></i></span></button>
                 </div>
                 <div class="modal-body">
-                    <form class="search-pop-up" action="https://demo.hasthemes.com/jones-preview/jones/signup.html#" method="post">
+                    <form class="search-pop-up" action="signup.php#" method="post">
                         <input type="text" placeholder="Search..........">
                         <button type="button"><i class="fa fa-search"></i></button>
                     </form>
@@ -411,7 +411,7 @@
     <script src="./signup_files/ajax-mail.js"></script>
     <script src="./signup_files/owl.carousel.min.js"></script>
     <script src="./signup_files/plugins.js"></script>
-    <script src="./signup_files/main.js"></script><a id="scrollUp" href="https://demo.hasthemes.com/jones-preview/jones/signup.html#top" style="display: none; position: fixed; z-index: 2147483647;"><i class="fa fa-long-arrow-up"></i></a>
+    <script src="./signup_files/main.js"></script><a id="scrollUp" href="signup.php#top" style="display: none; position: fixed; z-index: 2147483647;"><i class="fa fa-long-arrow-up"></i></a>
 
     <veepn-lock-screen><template shadowrootmode="open">
             <style>
