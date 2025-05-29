@@ -53,23 +53,42 @@
             <i class="material-symbols-rounded opacity-5">dashboard</i>
             <span class="nav-link-text ms-1">Dashboard</span>
           </a>
-        </li>       
+        </li>
         <li class="nav-item">
           <a class="nav-link text-dark" href="home.php">
             <i class="material-symbols-rounded opacity-5">home</i>
             <span class="nav-link-text ms-1">Home</span>
           </a>
-        </li>       
-        <li class="nav-item">
-          <a class="nav-link text-dark" href="courses.php">
-            <i class="material-symbols-rounded opacity-5">school</i>
-            <span class="nav-link-text ms-1">Courses</span>
-          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-dark" href="aboutus.php">
-            <i class="material-symbols-rounded opacity-5">info</i>
-            <span class="nav-link-text ms-1">About Us</span>
+          <a class="nav-link text-dark" data-bs-toggle="collapse" href="#blogMenu" role="button" aria-expanded="false" aria-controls="blogMenu">
+            <i class="material-symbols-rounded opacity-5">article</i>
+            <span class="nav-link-text ms-1">Blog</span>
+          </a>
+
+          <div class="collapse ms-4" id="blogMenu">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link text-dark" href="view-blog.php">
+                  <i class="material-symbols-rounded opacity-5">visibility</i>
+                  <span class="nav-link-text ms-1">View Blogs</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-dark" href="blog-create.php">
+                  <i class="material-symbols-rounded opacity-5">add_circle</i>
+                  <span class="nav-link-text ms-1">Create Blog</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="admin_accounts.php">
+            <i class="material-symbols-rounded opacity-5">supervisor_account</i>
+            <span class="nav-link-text ms-1">Admin Accounts</span>
           </a>
         </li>
         <li class="nav-item">
@@ -79,7 +98,7 @@
           </a>
         </li>
       </ul>
-    </div>    
+    </div>
   </aside>
   <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
     <!-- Navbar -->
@@ -98,7 +117,7 @@
               <input type="text" class="form-control">
             </div>
           </div>
-          <ul class="navbar-nav d-flex align-items-center  justify-content-end">            
+          <ul class="navbar-nav d-flex align-items-center  justify-content-end">
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                 <div class="sidenav-toggler-inner">

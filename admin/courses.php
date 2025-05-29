@@ -3,30 +3,30 @@ include("../connect.php");
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_course'])) {
-    $title = $_POST['title'];
-    $instructor_id = $_POST['instructor_id'];
-    $price = $_POST['price'];
-    $duration_months = $_POST['duration_months'];
-    $lecture_count = $_POST['lecture_count'];
-    
-    // Handle file upload
-    $course_image = '';
-    if (isset($_FILES['course_image']) && $_FILES['course_image']['error'] == UPLOAD_ERR_OK) {
-        $upload_dir = '../course_images/';
-        if (!file_exists($upload_dir)) {
-            mkdir($upload_dir, 0777, true);
-        }
-        $file_name = uniqid() . '_' . basename($_FILES['course_image']['name']);
-        $target_path = $upload_dir . $file_name;
-        
-        if (move_uploaded_file($_FILES['course_image']['tmp_name'], $target_path)) {
-            $course_image = 'course_images/' . $file_name;
-        }
+  $title = $_POST['title'];
+  $instructor_id = $_POST['instructor_id'];
+  $price = $_POST['price'];
+  $duration_months = $_POST['duration_months'];
+  $lecture_count = $_POST['lecture_count'];
+
+  // Handle file upload
+  $course_image = '';
+  if (isset($_FILES['course_image']) && $_FILES['course_image']['error'] == UPLOAD_ERR_OK) {
+    $upload_dir = '../course_images/';
+    if (!file_exists($upload_dir)) {
+      mkdir($upload_dir, 0777, true);
     }
-    
-    $stmt = $conn->prepare("INSERT INTO courses (title, instructor_id, price, course_image, duration_months, lecture_count) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sidsii", $title, $instructor_id, $price, $course_image, $duration_months, $lecture_count);
-    $stmt->execute();
+    $file_name = uniqid() . '_' . basename($_FILES['course_image']['name']);
+    $target_path = $upload_dir . $file_name;
+
+    if (move_uploaded_file($_FILES['course_image']['tmp_name'], $target_path)) {
+      $course_image = 'course_images/' . $file_name;
+    }
+  }
+
+  $stmt = $conn->prepare("INSERT INTO courses (title, instructor_id, price, course_image, duration_months, lecture_count) VALUES (?, ?, ?, ?, ?, ?)");
+  $stmt->bind_param("sidsii", $title, $instructor_id, $price, $course_image, $duration_months, $lecture_count);
+  $stmt->execute();
 }
 ?>
 
@@ -52,13 +52,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_course'])) {
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- CSS Files -->
-  <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />  
+  <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />
   <style>
-    input, textarea, select {
-        border: 1px solid #ccc !important;
-        padding: 8px !important;
-        border-radius: 4px !important;
-        font-size: 14px !important;
+    input,
+    textarea,
+    select {
+      border: 1px solid #ccc !important;
+      padding: 8px !important;
+      border-radius: 4px !important;
+      font-size: 14px !important;
     }
   </style>
 </head>
@@ -80,13 +82,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_course'])) {
             <i class="material-symbols-rounded opacity-5">dashboard</i>
             <span class="nav-link-text ms-1">Dashboard</span>
           </a>
-        </li>       
+        </li>
         <li class="nav-item">
           <a class="nav-link text-dark" href="home.php">
             <i class="material-symbols-rounded opacity-5">home</i>
             <span class="nav-link-text ms-1">Home</span>
           </a>
-        </li>       
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark" data-bs-toggle="collapse" href="#blogMenu" role="button" aria-expanded="false" aria-controls="blogMenu">
+            <i class="material-symbols-rounded opacity-5">article</i>
+            <span class="nav-link-text ms-1">Blog</span>
+          </a>
+
+          <div class="collapse ms-4" id="blogMenu">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link text-dark" href="view-blog.php">
+                  <i class="material-symbols-rounded opacity-5">visibility</i>
+                  <span class="nav-link-text ms-1">View Blogs</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-dark" href="blog-create.php">
+                  <i class="material-symbols-rounded opacity-5">add_circle</i>
+                  <span class="nav-link-text ms-1">Create Blog</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="admin_accounts.php">
+            <i class="material-symbols-rounded opacity-5">supervisor_account</i>
+            <span class="nav-link-text ms-1">Admin Accounts</span>
+          </a>
+        </li>
         <li class="nav-item">
           <a class="nav-link text-dark" href="courses.php">
             <i class="material-symbols-rounded opacity-5">school</i>
@@ -106,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_course'])) {
           </a>
         </li>
       </ul>
-    </div>    
+    </div>
   </aside>
   <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
     <!-- Navbar -->
@@ -125,7 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_course'])) {
               <input type="text" class="form-control">
             </div>
           </div>
-          <ul class="navbar-nav d-flex align-items-center  justify-content-end">            
+          <ul class="navbar-nav d-flex align-items-center  justify-content-end">
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                 <div class="sidenav-toggler-inner">
@@ -224,147 +257,147 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_course'])) {
     </nav>
     <!-- End Navbar -->
     <div class="container mt-4">
-        <h2>Manage Courses</h2>
-        
-        <!-- Add Course Form -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4>Add New Course</h4>
-            </div>
-            <div class="card-body">
-                <form method="POST" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label class="form-label">Course Title</label>
-                        <input type="text" name="title" class="form-control" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Instructor</label>
-                        <select name="instructor_id" class="form-control" required>
-                            <?php
-                            $instructors = $conn->query("SELECT id, name FROM instructors");
-                            while ($instructor = $instructors->fetch_assoc()) {
-                                echo '<option value="'.$instructor['id'].'">'.$instructor['name'].'</option>';
-                            }
-                            ?>
-                        </select>
-                    </div>
-                                        
-                    <div class="mb-3">
-                        <label class="form-label">Price (Ks) - Enter 0 for free course</label>
-                        <input type="number" name="price" class="form-control" required min="0" step="1">
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Duration (months) - 0 for lifetime</label>
-                                <input type="number" name="duration_months" class="form-control" required min="0">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Number of Lectures</label>
-                                <input type="number" name="lecture_count" class="form-control" required min="0">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Course Image</label>
-                        <input type="file" name="course_image" class="form-control" required>
-                    </div>
-                    
-                    <button type="submit" name="add_course" class="btn btn-primary">Add Course</button>
-                </form>
-            </div>
+      <h2>Manage Courses</h2>
+
+      <!-- Add Course Form -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h4>Add New Course</h4>
         </div>
-        
-        <!-- Course List -->
-        <div class="card">
-            <div class="card-header">
-                <h4>Existing Courses</h4>
+        <div class="card-body">
+          <form method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+              <label class="form-label">Course Title</label>
+              <input type="text" name="title" class="form-control" required>
             </div>
-            <div class="card-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Image</th>
-                            <th>Title</th>
-                            <th>Instructor</th>
-                            <th>Price</th>
-                            <th>Duration</th>
-                            <th>Lecture</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $courses = $conn->query("
+
+            <div class="mb-3">
+              <label class="form-label">Instructor</label>
+              <select name="instructor_id" class="form-control" required>
+                <?php
+                $instructors = $conn->query("SELECT id, name FROM instructors");
+                while ($instructor = $instructors->fetch_assoc()) {
+                  echo '<option value="' . $instructor['id'] . '">' . $instructor['name'] . '</option>';
+                }
+                ?>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Price (Ks) - Enter 0 for free course</label>
+              <input type="number" name="price" class="form-control" required min="0" step="1">
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Duration (months) - 0 for lifetime</label>
+                  <input type="number" name="duration_months" class="form-control" required min="0">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Number of Lectures</label>
+                  <input type="number" name="lecture_count" class="form-control" required min="0">
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Course Image</label>
+              <input type="file" name="course_image" class="form-control" required>
+            </div>
+
+            <button type="submit" name="add_course" class="btn btn-primary">Add Course</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Course List -->
+      <div class="card">
+        <div class="card-header">
+          <h4>Existing Courses</h4>
+        </div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Instructor</th>
+                <th>Price</th>
+                <th>Duration</th>
+                <th>Lecture</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
+              $courses = $conn->query("
                             SELECT c.*, i.name as instructor_name, i.image_path as instructor_image 
                             FROM courses c
                             JOIN instructors i ON c.instructor_id = i.id
                             ORDER BY c.created_at DESC
                         ");
-                        
-                        while ($course = $courses->fetch_assoc()):
-                        ?>
-                        <tr>
-                            <td><img src="../<?php echo $course['course_image']; ?>" width="50"></td>
-                            <td><?php echo $course['title']; ?></td>
-                            <td><?php echo $course['instructor_name']; ?></td>
-                            <td>
-                                <?php echo ($course['price'] == 0) ? 'Free' : '$' . number_format($course['price'], 2); ?>
-                            </td>
-                            <td>
-                                <?php echo ($course['duration_months'] == 0) ? 'Lifetime' : $course['duration_months'].' months'; ?>
-                            </td>
-                            <td>
-                                <?php echo $course['lecture_count']; ?>
-                            </td>
-                            <td>
-                                <a href="edit_course.php?id=<?php echo $course['id']; ?>" class="btn btn-sm btn-warning">Edit</a>
-                                <a href="delete_course.php?id=<?php echo $course['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
-                            </td>
-                        </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-            </div>
+
+              while ($course = $courses->fetch_assoc()):
+              ?>
+                <tr>
+                  <td><img src="../<?php echo $course['course_image']; ?>" width="50"></td>
+                  <td><?php echo $course['title']; ?></td>
+                  <td><?php echo $course['instructor_name']; ?></td>
+                  <td>
+                    <?php echo ($course['price'] == 0) ? 'Free' : '$' . number_format($course['price'], 2); ?>
+                  </td>
+                  <td>
+                    <?php echo ($course['duration_months'] == 0) ? 'Lifetime' : $course['duration_months'] . ' months'; ?>
+                  </td>
+                  <td>
+                    <?php echo $course['lecture_count']; ?>
+                  </td>
+                  <td>
+                    <a href="edit_course.php?id=<?php echo $course['id']; ?>" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="delete_course.php?id=<?php echo $course['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                  </td>
+                </tr>
+              <?php endwhile; ?>
+            </tbody>
+          </table>
         </div>
+      </div>
     </div>
-      <footer class="footer py-4  ">
-        <div class="container-fluid">
-          <div class="row align-items-center justify-content-lg-between">
-            <div class="col-lg-6 mb-lg-0 mb-4">
-              <div class="copyright text-center text-sm text-muted text-lg-start">
-                © <script>
-                  document.write(new Date().getFullYear())
-                </script>,
-                made with <i class="fa fa-heart"></i> by
-                <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
-                for a better web.
-              </div>
-            </div>
-            <div class="col-lg-6">
-              <ul class="nav nav-footer justify-content-center justify-content-lg-end">
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
-                </li>
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
-                </li>
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
-                </li>
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
-                </li>
-              </ul>
+    <footer class="footer py-4  ">
+      <div class="container-fluid">
+        <div class="row align-items-center justify-content-lg-between">
+          <div class="col-lg-6 mb-lg-0 mb-4">
+            <div class="copyright text-center text-sm text-muted text-lg-start">
+              © <script>
+                document.write(new Date().getFullYear())
+              </script>,
+              made with <i class="fa fa-heart"></i> by
+              <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
+              for a better web.
             </div>
           </div>
+          <div class="col-lg-6">
+            <ul class="nav nav-footer justify-content-center justify-content-lg-end">
+              <li class="nav-item">
+                <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
+              </li>
+              <li class="nav-item">
+                <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
+              </li>
+              <li class="nav-item">
+                <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
+              </li>
+              <li class="nav-item">
+                <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
+              </li>
+            </ul>
+          </div>
         </div>
-      </footer>
+      </div>
+    </footer>
     </div>
   </main>
   <div class="fixed-plugin">
@@ -695,4 +728,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_course'])) {
   <script src="../assets/js/material-dashboard.min.js?v=3.2.0"></script>
 
 </body>
+
 </html>

@@ -4,119 +4,118 @@ include("../connect.php");
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['add_instructor'])) {
-        // Add new instructor
-        $name = $_POST['name'];
-        $position = $_POST['position'];
-        $qualification = $_POST['qualification'];
-        $bio = $_POST['bio'];
-        
-        // Handle image upload
-        $image_path = '';
-        if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
-            $upload_dir = '../instructors/';
-            if (!file_exists($upload_dir)) {
-                mkdir($upload_dir, 0777, true);
-            }
-            $file_name = uniqid() . '_' . basename($_FILES['image']['name']);
-            $target_path = $upload_dir . $file_name;
-            
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $target_path)) {
-                $image_path = 'instructors/' . $file_name;
-            }
-        }
-        
-        $stmt = $conn->prepare("INSERT INTO instructors (name, position, qualification, bio, image_path) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssss", $name, $position, $qualification, $bio, $image_path);
-        if ($stmt->execute()) {
-            $_SESSION['message'] = "Instructor added successfully!";
-            $_SESSION['message_type'] = "success";
-        } else {
-            $_SESSION['message'] = "Error adding instructor: " . $conn->error;
-            $_SESSION['message_type'] = "danger";
-        }
-        header("Location: instructors.php");
-        exit();
+  if (isset($_POST['add_instructor'])) {
+    // Add new instructor
+    $name = $_POST['name'];
+    $position = $_POST['position'];
+    $qualification = $_POST['qualification'];
+    $bio = $_POST['bio'];
+
+    // Handle image upload
+    $image_path = '';
+    if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
+      $upload_dir = '../instructors/';
+      if (!file_exists($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+      }
+      $file_name = uniqid() . '_' . basename($_FILES['image']['name']);
+      $target_path = $upload_dir . $file_name;
+
+      if (move_uploaded_file($_FILES['image']['tmp_name'], $target_path)) {
+        $image_path = 'instructors/' . $file_name;
+      }
     }
-    elseif (isset($_POST['update_instructor'])) {
-        // Update existing instructor
-        $id = $_POST['id'];
-        $name = $_POST['name'];
-        $position = $_POST['position'];
-        $qualification = $_POST['qualification'];
-        $bio = $_POST['bio'];
-        
-        // Handle image upload
-        $image_path = $_POST['current_image'];
-        if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
-            $upload_dir = '../instructors/';
-            $file_name = uniqid() . '_' . basename($_FILES['image']['name']);
-            $target_path = $upload_dir . $file_name;
-            
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $target_path)) {
-                $image_path = 'instructors/' . $file_name;
-                // Delete old image if exists
-                if (!empty($_POST['current_image']) && file_exists('../' . $_POST['current_image'])) {
-                    unlink('../' . $_POST['current_image']);
-                }
-            }
-        }
-        
-        $stmt = $conn->prepare("UPDATE instructors SET name=?, position=?, qualification=?, bio=?, image_path=? WHERE id=?");
-        $stmt->bind_param("sssssi", $name, $position, $qualification, $bio, $image_path, $id);
-        if ($stmt->execute()) {
-            $_SESSION['message'] = "Instructor updated successfully!";
-            $_SESSION['message_type'] = "success";
-        } else {
-            $_SESSION['message'] = "Error updating instructor: " . $conn->error;
-            $_SESSION['message_type'] = "danger";
-        }
-        header("Location: instructors.php");
-        exit();
+
+    $stmt = $conn->prepare("INSERT INTO instructors (name, position, qualification, bio, image_path) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssss", $name, $position, $qualification, $bio, $image_path);
+    if ($stmt->execute()) {
+      $_SESSION['message'] = "Instructor added successfully!";
+      $_SESSION['message_type'] = "success";
+    } else {
+      $_SESSION['message'] = "Error adding instructor: " . $conn->error;
+      $_SESSION['message_type'] = "danger";
     }
+    header("Location: instructors.php");
+    exit();
+  } elseif (isset($_POST['update_instructor'])) {
+    // Update existing instructor
+    $id = $_POST['id'];
+    $name = $_POST['name'];
+    $position = $_POST['position'];
+    $qualification = $_POST['qualification'];
+    $bio = $_POST['bio'];
+
+    // Handle image upload
+    $image_path = $_POST['current_image'];
+    if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
+      $upload_dir = '../instructors/';
+      $file_name = uniqid() . '_' . basename($_FILES['image']['name']);
+      $target_path = $upload_dir . $file_name;
+
+      if (move_uploaded_file($_FILES['image']['tmp_name'], $target_path)) {
+        $image_path = 'instructors/' . $file_name;
+        // Delete old image if exists
+        if (!empty($_POST['current_image']) && file_exists('../' . $_POST['current_image'])) {
+          unlink('../' . $_POST['current_image']);
+        }
+      }
+    }
+
+    $stmt = $conn->prepare("UPDATE instructors SET name=?, position=?, qualification=?, bio=?, image_path=? WHERE id=?");
+    $stmt->bind_param("sssssi", $name, $position, $qualification, $bio, $image_path, $id);
+    if ($stmt->execute()) {
+      $_SESSION['message'] = "Instructor updated successfully!";
+      $_SESSION['message_type'] = "success";
+    } else {
+      $_SESSION['message'] = "Error updating instructor: " . $conn->error;
+      $_SESSION['message_type'] = "danger";
+    }
+    header("Location: instructors.php");
+    exit();
+  }
 }
 
 // Handle delete action
 if (isset($_GET['delete'])) {
-    $id = intval($_GET['delete']); // Sanitize input
-    
-    try {
-        // Start transaction
-        $conn->begin_transaction();
-        
-        // First get image path to delete file
-        $stmt = $conn->prepare("SELECT image_path FROM instructors WHERE id = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            if (!empty($row['image_path']) && file_exists('../' . $row['image_path'])) {
-                unlink('../' . $row['image_path']);
-            }
-        }
-        
-        // Delete instructor record
-        $stmt = $conn->prepare("DELETE FROM instructors WHERE id = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        
-        // Commit transaction
-        $conn->commit();
-        
-        $_SESSION['message'] = "Instructor deleted successfully!";
-        $_SESSION['message_type'] = "success";
-    } catch (Exception $e) {
-        // Rollback transaction on error
-        $conn->rollback();
-        $_SESSION['message'] = "Error deleting instructor: " . $e->getMessage();
-        $_SESSION['message_type'] = "danger";
+  $id = intval($_GET['delete']); // Sanitize input
+
+  try {
+    // Start transaction
+    $conn->begin_transaction();
+
+    // First get image path to delete file
+    $stmt = $conn->prepare("SELECT image_path FROM instructors WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+      $row = $result->fetch_assoc();
+      if (!empty($row['image_path']) && file_exists('../' . $row['image_path'])) {
+        unlink('../' . $row['image_path']);
+      }
     }
-    
-    // Redirect to prevent form resubmission
-    header("Location: instructors.php");
-    exit();
+
+    // Delete instructor record
+    $stmt = $conn->prepare("DELETE FROM instructors WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+
+    // Commit transaction
+    $conn->commit();
+
+    $_SESSION['message'] = "Instructor deleted successfully!";
+    $_SESSION['message_type'] = "success";
+  } catch (Exception $e) {
+    // Rollback transaction on error
+    $conn->rollback();
+    $_SESSION['message'] = "Error deleting instructor: " . $e->getMessage();
+    $_SESSION['message_type'] = "danger";
+  }
+
+  // Redirect to prevent form resubmission
+  header("Location: instructors.php");
+  exit();
 }
 
 // Fetch all instructors
@@ -124,10 +123,10 @@ $instructors = $conn->query("SELECT * FROM instructors ORDER BY name");
 
 // Display session message if exists
 if (isset($_SESSION['message'])) {
-    $message = $_SESSION['message'];
-    $message_type = $_SESSION['message_type'];
-    unset($_SESSION['message']);
-    unset($_SESSION['message_type']);
+  $message = $_SESSION['message'];
+  $message_type = $_SESSION['message_type'];
+  unset($_SESSION['message']);
+  unset($_SESSION['message_type']);
 }
 ?>
 
@@ -154,35 +153,40 @@ if (isset($_SESSION['message'])) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <!-- CSS Files -->
-  <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />  
+  <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />
   <style>
-        input, textarea, select {
-            border: 1px solid #ccc !important;
-            padding: 8px !important;
-            border-radius: 4px !important;
-            font-size: 14px !important;
-        }
-        .instructor-img-preview {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin-bottom: 15px;
-        }
-        .instructor-card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .bio-preview {
-            max-height: 100px;            
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-        }
+    input,
+    textarea,
+    select {
+      border: 1px solid #ccc !important;
+      padding: 8px !important;
+      border-radius: 4px !important;
+      font-size: 14px !important;
+    }
+
+    .instructor-img-preview {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 15px;
+    }
+
+    .instructor-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .bio-preview {
+      max-height: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
   </style>
 </head>
 
@@ -203,13 +207,44 @@ if (isset($_SESSION['message'])) {
             <i class="material-symbols-rounded opacity-5">dashboard</i>
             <span class="nav-link-text ms-1">Dashboard</span>
           </a>
-        </li>       
+        </li>
         <li class="nav-item">
           <a class="nav-link text-dark" href="home.php">
             <i class="material-symbols-rounded opacity-5">home</i>
             <span class="nav-link-text ms-1">Home</span>
           </a>
-        </li>       
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark" data-bs-toggle="collapse" href="#blogMenu" role="button" aria-expanded="false" aria-controls="blogMenu">
+            <i class="material-symbols-rounded opacity-5">article</i>
+            <span class="nav-link-text ms-1">Blog</span>
+          </a>
+
+          <div class="collapse ms-4" id="blogMenu">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link text-dark" href="view-blog.php">
+                  <i class="material-symbols-rounded opacity-5">visibility</i>
+                  <span class="nav-link-text ms-1">View Blogs</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-dark" href="blog-create.php">
+                  <i class="material-symbols-rounded opacity-5">add_circle</i>
+                  <span class="nav-link-text ms-1">Create Blog</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="admin_accounts.php">
+            <i class="material-symbols-rounded opacity-5">supervisor_account</i>
+            <span class="nav-link-text ms-1">Admin Accounts</span>
+          </a>
+        </li>
         <li class="nav-item">
           <a class="nav-link text-dark" href="courses.php">
             <i class="material-symbols-rounded opacity-5">school</i>
@@ -229,7 +264,7 @@ if (isset($_SESSION['message'])) {
           </a>
         </li>
       </ul>
-    </div>    
+    </div>
   </aside>
   <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
     <!-- Navbar -->
@@ -248,7 +283,7 @@ if (isset($_SESSION['message'])) {
               <input type="text" class="form-control">
             </div>
           </div>
-          <ul class="navbar-nav d-flex align-items-center  justify-content-end">            
+          <ul class="navbar-nav d-flex align-items-center  justify-content-end">
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
               <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                 <div class="sidenav-toggler-inner">
@@ -347,166 +382,166 @@ if (isset($_SESSION['message'])) {
     </nav>
     <!-- End Navbar -->
     <div class="container py-4">
-        <h1 class="mb-4">Manage Instructors</h1>
-        
-        <?php if (isset($message)): ?>
-            <div class="alert alert-<?php echo $message_type; ?>"><?php echo $message; ?></div>
-        <?php endif; ?>
-        
-        <!-- Instructor Form -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h2><?php echo isset($_GET['edit']) ? 'Edit Instructor' : 'Add Instructor'; ?></h2>
-            </div>
-            <div class="card-body">
-                <?php
-                $edit_instructor = null;
-                if (isset($_GET['edit'])) {
-                    $edit_id = intval($_GET['edit']);
-                    $edit_instructor = $conn->query("SELECT * FROM instructors WHERE id = $edit_id")->fetch_assoc();
-                }
-                ?>
-                <form method="POST" enctype="multipart/form-data">
-                    <?php if ($edit_instructor): ?>
-                        <input type="hidden" name="id" value="<?php echo $edit_instructor['id']; ?>">
-                        <input type="hidden" name="current_image" value="<?php echo $edit_instructor['image_path']; ?>">
-                    <?php endif; ?>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Name*</label>
-                                <input type="text" class="form-control" name="name" required 
-                                       value="<?php echo $edit_instructor['name'] ?? ''; ?>">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Position*</label>
-                                <input type="text" class="form-control" name="position" required 
-                                       value="<?php echo $edit_instructor['position'] ?? ''; ?>">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Qualification</label>
-                                <input type="text" class="form-control" name="qualification" 
-                                       value="<?php echo $edit_instructor['qualification'] ?? ''; ?>">
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Profile Image</label>
-                                <input type="file" class="form-control" name="image">
-                                <?php if ($edit_instructor && !empty($edit_instructor['image_path'])): ?>
-                                    <div class="mt-2">
-                                        <img src="../<?php echo $edit_instructor['image_path']; ?>" class="instructor-img-preview">
-                                        <p>Current image</p>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                        
-                        <div class="col-12">
-                            <div class="mb-3">
-                                <label class="form-label">Bio</label>
-                                <textarea class="form-control" name="bio" rows="4"><?php echo $edit_instructor['bio'] ?? ''; ?></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary" name="<?php echo isset($_GET['edit']) ? 'update_instructor' : 'add_instructor'; ?>">
-                        <?php echo isset($_GET['edit']) ? 'Update Instructor' : 'Add Instructor'; ?>
-                    </button>
-                    
-                    <?php if (isset($_GET['edit'])): ?>
-                        <a href="instructors.php" class="btn btn-secondary">Cancel</a>
-                    <?php endif; ?>
-                </form>
-            </div>
+      <h1 class="mb-4">Manage Instructors</h1>
+
+      <?php if (isset($message)): ?>
+        <div class="alert alert-<?php echo $message_type; ?>"><?php echo $message; ?></div>
+      <?php endif; ?>
+
+      <!-- Instructor Form -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h2><?php echo isset($_GET['edit']) ? 'Edit Instructor' : 'Add Instructor'; ?></h2>
         </div>
-        
-        <!-- Instructors List -->
-        <div class="card">
-            <div class="card-header">
-                <h2>Instructors List</h2>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <?php if ($instructors->num_rows > 0): ?>
-                        <?php while ($instructor = $instructors->fetch_assoc()): ?>
-                            <div class="col-md-4 mb-4">
-                                <div class="instructor-card">
-                                    <?php if (!empty($instructor['image_path'])): ?>
-                                        <img src="../<?php echo $instructor['image_path']; ?>" class="instructor-img-preview mx-auto d-block">
-                                    <?php else: ?>
-                                        <div class="instructor-img-preview mx-auto d-block bg-light d-flex align-items-center justify-content-center">
-                                            <i class="fas fa-user fa-3x text-muted"></i>
-                                        </div>
-                                    <?php endif; ?>
-                                    
-                                    <h4 class="text-center"><?php echo $instructor['name']; ?></h4>
-                                    <p class="text-center text-muted"><?php echo $instructor['position']; ?></p>
-                                    <?php if ($instructor['qualification']): ?>
-                                        <p class="text-center"><small><?php echo $instructor['qualification']; ?></small></p>
-                                    <?php endif; ?>
-                                    
-                                    <?php if ($instructor['bio']): ?>
-                                        <div class="bio-preview mt-2">
-                                            <p><?php echo $instructor['bio']; ?></p>
-                                        </div>
-                                    <?php endif; ?>
-                                    
-                                    <div class="text-center mt-3">
-                                        <a href="instructors.php?edit=<?php echo $instructor['id']; ?>" class="btn btn-sm btn-primary">Edit</a>
-                                        <a href="instructors.php?delete=<?php echo $instructor['id']; ?>" class="btn btn-sm btn-danger" 
-                                           onclick="return confirm('Are you sure you want to delete <?php echo addslashes($instructor['name']); ?>?')">
-                                           Delete
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <div class="col-12">
-                            <p class="text-center text-muted">No instructors found. Add your first instructor above.</p>
-                        </div>
-                    <?php endif; ?>
+        <div class="card-body">
+          <?php
+          $edit_instructor = null;
+          if (isset($_GET['edit'])) {
+            $edit_id = intval($_GET['edit']);
+            $edit_instructor = $conn->query("SELECT * FROM instructors WHERE id = $edit_id")->fetch_assoc();
+          }
+          ?>
+          <form method="POST" enctype="multipart/form-data">
+            <?php if ($edit_instructor): ?>
+              <input type="hidden" name="id" value="<?php echo $edit_instructor['id']; ?>">
+              <input type="hidden" name="current_image" value="<?php echo $edit_instructor['image_path']; ?>">
+            <?php endif; ?>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Name*</label>
+                  <input type="text" class="form-control" name="name" required
+                    value="<?php echo $edit_instructor['name'] ?? ''; ?>">
                 </div>
-            </div>
-        </div>
-    </div>
-      <footer class="footer py-4  ">
-        <div class="container-fluid">
-          <div class="row align-items-center justify-content-lg-between">
-            <div class="col-lg-6 mb-lg-0 mb-4">
-              <div class="copyright text-center text-sm text-muted text-lg-start">
-                © <script>
-                  document.write(new Date().getFullYear())
-                </script>,
-                made with <i class="fa fa-heart"></i> by
-                <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
-                for a better web.
+
+                <div class="mb-3">
+                  <label class="form-label">Position*</label>
+                  <input type="text" class="form-control" name="position" required
+                    value="<?php echo $edit_instructor['position'] ?? ''; ?>">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Qualification</label>
+                  <input type="text" class="form-control" name="qualification"
+                    value="<?php echo $edit_instructor['qualification'] ?? ''; ?>">
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Profile Image</label>
+                  <input type="file" class="form-control" name="image">
+                  <?php if ($edit_instructor && !empty($edit_instructor['image_path'])): ?>
+                    <div class="mt-2">
+                      <img src="../<?php echo $edit_instructor['image_path']; ?>" class="instructor-img-preview">
+                      <p>Current image</p>
+                    </div>
+                  <?php endif; ?>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="mb-3">
+                  <label class="form-label">Bio</label>
+                  <textarea class="form-control" name="bio" rows="4"><?php echo $edit_instructor['bio'] ?? ''; ?></textarea>
+                </div>
               </div>
             </div>
-            <div class="col-lg-6">
-              <ul class="nav nav-footer justify-content-center justify-content-lg-end">
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
-                </li>
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
-                </li>
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
-                </li>
-                <li class="nav-item">
-                  <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
-                </li>
-              </ul>
-            </div>
+
+            <button type="submit" class="btn btn-primary" name="<?php echo isset($_GET['edit']) ? 'update_instructor' : 'add_instructor'; ?>">
+              <?php echo isset($_GET['edit']) ? 'Update Instructor' : 'Add Instructor'; ?>
+            </button>
+
+            <?php if (isset($_GET['edit'])): ?>
+              <a href="instructors.php" class="btn btn-secondary">Cancel</a>
+            <?php endif; ?>
+          </form>
+        </div>
+      </div>
+
+      <!-- Instructors List -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Instructors List</h2>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <?php if ($instructors->num_rows > 0): ?>
+              <?php while ($instructor = $instructors->fetch_assoc()): ?>
+                <div class="col-md-4 mb-4">
+                  <div class="instructor-card">
+                    <?php if (!empty($instructor['image_path'])): ?>
+                      <img src="../<?php echo $instructor['image_path']; ?>" class="instructor-img-preview mx-auto d-block">
+                    <?php else: ?>
+                      <div class="instructor-img-preview mx-auto d-block bg-light d-flex align-items-center justify-content-center">
+                        <i class="fas fa-user fa-3x text-muted"></i>
+                      </div>
+                    <?php endif; ?>
+
+                    <h4 class="text-center"><?php echo $instructor['name']; ?></h4>
+                    <p class="text-center text-muted"><?php echo $instructor['position']; ?></p>
+                    <?php if ($instructor['qualification']): ?>
+                      <p class="text-center"><small><?php echo $instructor['qualification']; ?></small></p>
+                    <?php endif; ?>
+
+                    <?php if ($instructor['bio']): ?>
+                      <div class="bio-preview mt-2">
+                        <p><?php echo $instructor['bio']; ?></p>
+                      </div>
+                    <?php endif; ?>
+
+                    <div class="text-center mt-3">
+                      <a href="instructors.php?edit=<?php echo $instructor['id']; ?>" class="btn btn-sm btn-primary">Edit</a>
+                      <a href="instructors.php?delete=<?php echo $instructor['id']; ?>" class="btn btn-sm btn-danger"
+                        onclick="return confirm('Are you sure you want to delete <?php echo addslashes($instructor['name']); ?>?')">
+                        Delete
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              <?php endwhile; ?>
+            <?php else: ?>
+              <div class="col-12">
+                <p class="text-center text-muted">No instructors found. Add your first instructor above.</p>
+              </div>
+            <?php endif; ?>
           </div>
         </div>
-      </footer>
+      </div>
+    </div>
+    <footer class="footer py-4  ">
+      <div class="container-fluid">
+        <div class="row align-items-center justify-content-lg-between">
+          <div class="col-lg-6 mb-lg-0 mb-4">
+            <div class="copyright text-center text-sm text-muted text-lg-start">
+              © <script>
+                document.write(new Date().getFullYear())
+              </script>,
+              made with <i class="fa fa-heart"></i> by
+              <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
+              for a better web.
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <ul class="nav nav-footer justify-content-center justify-content-lg-end">
+              <li class="nav-item">
+                <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
+              </li>
+              <li class="nav-item">
+                <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
+              </li>
+              <li class="nav-item">
+                <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
+              </li>
+              <li class="nav-item">
+                <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
     </div>
   </main>
   <div class="fixed-plugin">
@@ -835,10 +870,11 @@ if (isset($_SESSION['message'])) {
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="../assets/js/material-dashboard.min.js?v=3.2.0"></script>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 
 </body>
+
 </html>
